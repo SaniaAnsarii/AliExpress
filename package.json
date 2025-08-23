@@ -8,9 +8,16 @@
     "start": "next start"
   },
   "dependencies": {
+    "@headlessui/react": "^2.2.7",
+    "@reduxjs/toolkit": "^2.8.2",
+    "axios": "^1.11.0",
+    "firebase": "^12.1.0",
+    "lucide-react": "^0.541.0",
+    "next": "15.5.0",
     "react": "19.1.0",
     "react-dom": "19.1.0",
-    "next": "15.5.0"
+    "react-redux": "^9.2.0",
+    "react-router-dom": "^7.8.2"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",
