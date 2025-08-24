@@ -4,7 +4,8 @@ import {
   createUserWithEmailAndPassword, 
   signInWithEmailAndPassword, 
   signOut,
-  onAuthStateChanged 
+  onAuthStateChanged,
+  updateProfile
 } from 'firebase/auth';
 
 // Async thunks for authentication
@@ -13,7 +14,14 @@ export const signUp = createAsyncThunk(
   async ({ email, password }, { rejectWithValue }) => {
     try {
       const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-      return userCredential.user;
+      // Return only serializable user data
+      return {
+        uid: userCredential.user.uid,
+        email: userCredential.user.email,
+        displayName: userCredential.user.displayName,
+        photoURL: userCredential.user.photoURL,
+        emailVerified: userCredential.user.emailVerified
+      };
     } catch (error) {
       return rejectWithValue(error.message);
     }
@@ -25,7 +33,14 @@ export const signIn = createAsyncThunk(
   async ({ email, password }, { rejectWithValue }) => {
     try {
       const userCredential = await signInWithEmailAndPassword(auth, email, password);
-      return userCredential.user;
+      // Return only serializable user data
+      return {
+        uid: userCredential.user.uid,
+        email: userCredential.user.email,
+        displayName: userCredential.user.displayName,
+        photoURL: userCredential.user.photoURL,
+        emailVerified: userCredential.user.emailVerified
+      };
     } catch (error) {
       return rejectWithValue(error.message);
     }
@@ -37,6 +52,34 @@ export const signOutUser = createAsyncThunk(
   async (_, { rejectWithValue }) => {
     try {
       await signOut(auth);
+    } catch (error) {
+      return rejectWithValue(error.message);
+    }
+  }
+);
+
+export const updateUserProfile = createAsyncThunk(
+  'auth/updateProfile',
+  async ({ displayName, photoURL }, { rejectWithValue }) => {
+    try {
+      const user = auth.currentUser;
+      if (!user) {
+        throw new Error('No user is signed in');
+      }
+      
+      await updateProfile(user, {
+        displayName: displayName || user.displayName,
+        photoURL: photoURL || user.photoURL
+      });
+      
+      // Return updated user data
+      return {
+        uid: user.uid,
+        email: user.email,
+        displayName: displayName || user.displayName,
+        photoURL: photoURL || user.photoURL,
+        emailVerified: user.emailVerified
+      };
     } catch (error) {
       return rejectWithValue(error.message);
     }
@@ -102,6 +145,20 @@ const authSlice = createSlice({
         state.isAuthenticated = false;
       })
       .addCase(signOutUser.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      })
+      // Update Profile
+      .addCase(updateUserProfile.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(updateUserProfile.fulfilled, (state, action) => {
+        state.loading = false;
+        state.user = action.payload;
+        state.error = null;
+      })
+      .addCase(updateUserProfile.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
       });

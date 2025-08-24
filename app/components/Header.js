@@ -1,12 +1,10 @@
 'use client';
 
-import { useSelector, useDispatch } from 'react-redux';
+import { useSelector } from 'react-redux';
 import { useState } from 'react';
 import { ShoppingCart, Search, User, Menu, X } from 'lucide-react';
-import { signOutUser } from '../features/auth/authSlice';
 
-export default function Header({ onAuthClick }) {
-  const dispatch = useDispatch();
+export default function Header({ onAuthClick, onCartClick, onSearchClick, onProfileClick }) {
   const { user, isAuthenticated } = useSelector((state) => state.auth);
   const { items } = useSelector((state) => state.cart);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -16,14 +14,10 @@ export default function Header({ onAuthClick }) {
 
   const handleSearch = (e) => {
     e.preventDefault();
-    // TODO: Implement search functionality
-    console.log('Searching for:', searchQuery);
+    onSearchClick();
   };
 
-  const handleLogout = () => {
-    dispatch(signOutUser());
-    setIsMenuOpen(false);
-  };
+
 
   return (
     <header className="bg-white shadow-sm border-b sticky top-0 z-50">
@@ -43,11 +37,11 @@ export default function Header({ onAuthClick }) {
                   placeholder="Search for products..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-full pl-4 pr-12 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent"
+                  className="w-full pl-4 pr-12 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent text-gray-900 placeholder-gray-500"
                 />
                 <button
                   type="submit"
-                  className="absolute right-2 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-red-600"
+                  className="absolute right-2 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-red-600 cursor-pointer"
                 >
                   <Search size={20} />
                 </button>
@@ -58,7 +52,10 @@ export default function Header({ onAuthClick }) {
           {/* Navigation - Desktop */}
           <div className="hidden md:flex items-center space-x-6">
             {/* Cart */}
-            <button className="relative p-2 text-gray-600 hover:text-red-600 transition-colors">
+            <button 
+              onClick={onCartClick}
+              className="relative p-2 text-gray-600 hover:text-red-600 transition-colors cursor-pointer"
+            >
               <ShoppingCart size={24} />
               {cartItemCount > 0 && (
                 <span className="absolute -top-1 -right-1 bg-red-600 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
@@ -67,39 +64,38 @@ export default function Header({ onAuthClick }) {
               )}
             </button>
 
-            {/* User Menu */}
+                        {/* User Menu */}
             {isAuthenticated ? (
               <div className="relative">
-                <button className="flex items-center space-x-2 text-gray-600 hover:text-red-600 transition-colors">
-                  <User size={24} />
-                  <span className="hidden lg:block">{user?.email?.split('@')[0]}</span>
+                <button 
+                  onClick={onProfileClick}
+                  className="flex items-center space-x-2 text-gray-600 hover:text-red-600 transition-colors cursor-pointer"
+                >
+                  {user?.photoURL ? (
+                    <img 
+                      src={user.photoURL} 
+                      alt="Profile" 
+                      className="w-8 h-8 rounded-full object-cover border-2 border-gray-200"
+                    />
+                  ) : (
+                    <div className="w-8 h-8 rounded-full bg-red-600 flex items-center justify-center">
+                      <User size={16} className="text-white" />
+                    </div>
+                  )}
+                  <span className="hidden lg:block">{user?.displayName || user?.email?.split('@')[0]}</span>
                 </button>
-                <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-50">
-                  <button className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
-                    Profile
-                  </button>
-                  <button className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
-                    Orders
-                  </button>
-                  <button
-                    onClick={handleLogout}
-                    className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                  >
-                    Logout
-                  </button>
-                </div>
               </div>
             ) : (
               <div className="flex items-center space-x-4">
                 <button 
                   onClick={onAuthClick}
-                  className="text-gray-600 hover:text-red-600 transition-colors"
+                  className="text-gray-600 hover:text-red-600 transition-colors cursor-pointer"
                 >
                   Login
                 </button>
                 <button 
                   onClick={onAuthClick}
-                  className="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition-colors"
+                  className="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition-colors cursor-pointer"
                 >
                   Sign Up
                 </button>
@@ -110,7 +106,7 @@ export default function Header({ onAuthClick }) {
           {/* Mobile Menu Button */}
           <button
             onClick={() => setIsMenuOpen(!isMenuOpen)}
-            className="md:hidden p-2 text-gray-600 hover:text-red-600"
+            className="md:hidden p-2 text-gray-600 hover:text-red-600 cursor-pointer"
           >
             {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
           </button>
@@ -127,11 +123,11 @@ export default function Header({ onAuthClick }) {
                   placeholder="Search for products..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-full pl-4 pr-12 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500"
+                  className="w-full pl-4 pr-12 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 text-gray-900 placeholder-gray-500"
                 />
                 <button
                   type="submit"
-                  className="absolute right-2 top-1/2 transform -translate-y-1/2 text-gray-400"
+                  className="absolute right-2 top-1/2 transform -translate-y-1/2 text-gray-400 cursor-pointer"
                 >
                   <Search size={20} />
                 </button>
@@ -140,38 +136,48 @@ export default function Header({ onAuthClick }) {
 
             {/* Mobile Navigation */}
             <div className="space-y-4">
-              <button className="flex items-center space-x-2 text-gray-600 hover:text-red-600">
-                <ShoppingCart size={20} />
-                <span>Cart ({cartItemCount})</span>
-              </button>
+                             <button 
+                 onClick={onCartClick}
+                 className="flex items-center space-x-2 text-gray-600 hover:text-red-600 cursor-pointer"
+               >
+                 <ShoppingCart size={20} />
+                 <span>Cart ({cartItemCount})</span>
+               </button>
 
-              {isAuthenticated ? (
-                <div className="space-y-2">
-                  <div className="text-sm text-gray-500">{user?.email}</div>
-                  <button className="block w-full text-left text-gray-600 hover:text-red-600">
-                    Profile
-                  </button>
-                  <button className="block w-full text-left text-gray-600 hover:text-red-600">
-                    Orders
-                  </button>
-                  <button
-                    onClick={handleLogout}
-                    className="block w-full text-left text-gray-600 hover:text-red-600"
-                  >
-                    Logout
-                  </button>
+                             {isAuthenticated ? (
+                 <div className="space-y-2">
+                   <div className="flex items-center space-x-2 mb-2">
+                     {user?.photoURL ? (
+                       <img 
+                         src={user.photoURL} 
+                         alt="Profile" 
+                         className="w-8 h-8 rounded-full object-cover border-2 border-gray-200"
+                       />
+                     ) : (
+                       <div className="w-8 h-8 rounded-full bg-red-600 flex items-center justify-center">
+                         <User size={16} className="text-white" />
+                       </div>
+                     )}
+                     <div className="text-sm text-gray-500">{user?.displayName || user?.email}</div>
+                   </div>
+                   <button 
+                     onClick={onProfileClick}
+                     className="block w-full text-left text-gray-600 hover:text-red-600 cursor-pointer"
+                   >
+                     Profile
+                   </button>
                 </div>
               ) : (
                 <div className="space-y-2">
                   <button 
                     onClick={onAuthClick}
-                    className="block w-full text-left text-gray-600 hover:text-red-600"
+                    className="block w-full text-left text-gray-600 hover:text-red-600 cursor-pointer"
                   >
                     Login
                   </button>
                   <button 
                     onClick={onAuthClick}
-                    className="block w-full text-left text-gray-600 hover:text-red-600"
+                    className="block w-full text-left text-gray-600 hover:text-red-600 cursor-pointer"
                   >
                     Sign Up
                   </button>

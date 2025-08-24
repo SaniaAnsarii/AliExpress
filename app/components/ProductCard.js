@@ -5,7 +5,7 @@ import { useState } from 'react';
 import { ShoppingCart, Heart, Star } from 'lucide-react';
 import { addToCart } from '../features/cart/cartSlice';
 
-export default function ProductCard({ product }) {
+export default function ProductCard({ product, onClick }) {
   const dispatch = useDispatch();
   const { isAuthenticated } = useSelector((state) => state.auth);
   const [isWishlisted, setIsWishlisted] = useState(false);
@@ -18,14 +18,10 @@ export default function ProductCard({ product }) {
     }
 
     dispatch(addToCart({
-      product: {
-        id: product.id,
-        title: product.title,
-        price: parseFloat(product.price),
-        image: product.image,
-        rating: product.rating,
-        reviews: product.reviews
-      },
+      id: product.id,
+      title: product.title,
+      price: product.price,
+      image: product.image,
       quantity: 1
     }));
   };
@@ -45,7 +41,8 @@ export default function ProductCard({ product }) {
         <img
           src={product.image || "https://via.placeholder.com/300x300/e5e7eb/6b7280?text=Product"}
           alt={product.title}
-          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+          onClick={() => onClick && onClick(product)}
+          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300 cursor-pointer"
         />
         
         {/* Wishlist Button */}
@@ -71,7 +68,10 @@ export default function ProductCard({ product }) {
       {/* Product Info */}
       <div className="p-4">
         {/* Title */}
-        <h3 className="font-medium text-gray-900 text-sm mb-2 line-clamp-2 hover:text-red-600 transition-colors cursor-pointer">
+        <h3 
+          onClick={() => onClick && onClick(product)}
+          className="font-medium text-gray-900 text-sm mb-2 line-clamp-2 hover:text-red-600 transition-colors cursor-pointer"
+        >
           {product.title}
         </h3>
 
@@ -125,6 +125,8 @@ export default function ProductCard({ product }) {
           Add to Cart
         </button>
       </div>
+
+
     </div>
   );
 }

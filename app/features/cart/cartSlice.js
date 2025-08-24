@@ -3,8 +3,7 @@ import { createSlice } from '@reduxjs/toolkit';
 const initialState = {
   items: [],
   total: 0,
-  loading: false,
-  error: null,
+  itemCount: 0
 };
 
 const cartSlice = createSlice({
@@ -12,51 +11,65 @@ const cartSlice = createSlice({
   initialState,
   reducers: {
     addToCart: (state, action) => {
-      const { product, quantity = 1 } = action.payload;
-      const existingItem = state.items.find(item => item.id === product.id);
+      const { id, title, price, image, quantity = 1 } = action.payload;
+      const existingItem = state.items.find(item => item.id === id);
       
       if (existingItem) {
         existingItem.quantity += quantity;
       } else {
-        state.items.push({ ...product, quantity });
+        state.items.push({
+          id,
+          title,
+          price,
+          image,
+          quantity
+        });
       }
       
-      state.total = state.items.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+      // Update totals
+      state.itemCount = state.items.reduce((total, item) => total + item.quantity, 0);
+      state.total = state.items.reduce((total, item) => total + (parseFloat(item.price) * item.quantity), 0);
     },
     
     removeFromCart: (state, action) => {
-      const productId = action.payload;
-      state.items = state.items.filter(item => item.id !== productId);
-      state.total = state.items.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+      const itemId = action.payload;
+      state.items = state.items.filter(item => item.id !== itemId);
+      
+      // Update totals
+      state.itemCount = state.items.reduce((total, item) => total + item.quantity, 0);
+      state.total = state.items.reduce((total, item) => total + (parseFloat(item.price) * item.quantity), 0);
     },
     
     updateQuantity: (state, action) => {
-      const { productId, quantity } = action.payload;
-      const item = state.items.find(item => item.id === productId);
+      const { id, quantity } = action.payload;
+      const item = state.items.find(item => item.id === id);
       
       if (item) {
         if (quantity <= 0) {
-          state.items = state.items.filter(item => item.id !== productId);
+          state.items = state.items.filter(item => item.id !== id);
         } else {
           item.quantity = quantity;
         }
-        state.total = state.items.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+        
+        // Update totals
+        state.itemCount = state.items.reduce((total, item) => total + item.quantity, 0);
+        state.total = state.items.reduce((total, item) => total + (parseFloat(item.price) * item.quantity), 0);
       }
     },
     
     clearCart: (state) => {
       state.items = [];
       state.total = 0;
+      state.itemCount = 0;
     },
     
-    setCartLoading: (state, action) => {
-      state.loading = action.payload;
-    },
-    
-    setCartError: (state, action) => {
-      state.error = action.payload;
-    },
-  },
+    loadCartFromStorage: (state, action) => {
+      const { items, total, itemCount } = action.payload;
+      state.items = items || [];
+      state.total = total || 0;
+      state.itemCount = itemCount || 0;
+    }
+  }
 });
 
 export const { 
@@ -64,8 +77,7 @@ export const {
   removeFromCart, 
   updateQuantity, 
   clearCart, 
-  setCartLoading, 
-  setCartError 
+  loadCartFromStorage 
 } = cartSlice.actions;
 
 export default cartSlice.reducer;

@@ -24,3 +24,25 @@ body {
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
 }
+
+/* Ensure buttons have pointer cursor */
+button {
+  cursor: pointer;
+}
+
+/* Ensure clickable elements have pointer cursor */
+[role="button"],
+[type="button"],
+[type="submit"],
+[type="reset"] {
+  cursor: pointer;
+}
+
+/* Hide Next.js development indicator */
+#devtools-indicator,
+.nextjs-toast {
+  display: none !important;
+  visibility: hidden !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
+}

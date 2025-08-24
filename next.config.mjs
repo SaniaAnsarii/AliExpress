@@ -10,6 +10,11 @@ const nextConfig = {
       },
     },
   },
+  // Disable development indicators
+  devIndicators: {
+    buildActivity: false,
+    buildActivityPosition: 'bottom-right',
+  },
   webpack: (config) => {
     config.externals = [...(config.externals || []), 'canvas', 'jsdom'];
     return config;
