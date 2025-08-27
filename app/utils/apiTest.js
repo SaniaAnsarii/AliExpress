@@ -1,10 +1,8 @@
-// API Test Utility
 export const testAPI = async () => {
-  console.log('🧪 Starting API test...');
+  console.log('Starting API test...');
   
   try {
-    // Test 1: Categories API
-    console.log('📋 Testing Categories API...');
+    console.log('Testing Categories API...');
     const categoriesResponse = await fetch('https://ali-express1.p.rapidapi.com/categories', {
       method: 'GET',
       headers: {
@@ -17,8 +15,7 @@ export const testAPI = async () => {
     const categoriesData = await categoriesResponse.json();
     console.log('Categories Data:', categoriesData);
     
-    // Test 2: Search API
-    console.log('🔍 Testing Search API...');
+    console.log('Testing Search API...');
     const searchResponse = await fetch('https://ali-express1.p.rapidapi.com/search?query=phone&page=1&limit=5', {
       method: 'GET',
       headers: {
@@ -36,7 +33,7 @@ export const testAPI = async () => {
       search: { status: searchResponse.status, data: searchData }
     };
   } catch (error) {
-    console.error('❌ API Test failed:', error);
+    console.error('API Test failed:', error);
     return { error: error.message };
   }
 };

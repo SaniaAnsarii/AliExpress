@@ -5,7 +5,7 @@ import { addToCart } from '../features/cart/cartSlice';
 import { X, Star, ShoppingCart, Heart } from 'lucide-react';
 import { useState } from 'react';
 
-export default function ProductDetails({ product, isOpen, onClose }) {
+export default function ProductDetails({ product, isOpen, onClose, onAuthRequired }) {
   const dispatch = useDispatch();
   const { isAuthenticated } = useSelector((state) => state.auth);
   const [quantity, setQuantity] = useState(1);
@@ -13,7 +13,7 @@ export default function ProductDetails({ product, isOpen, onClose }) {
 
   const handleAddToCart = () => {
     if (!isAuthenticated) {
-      // Show login modal or redirect to login
+      onAuthRequired && onAuthRequired();
       return;
     }
 
@@ -30,7 +30,7 @@ export default function ProductDetails({ product, isOpen, onClose }) {
 
   const handleWishlist = () => {
     if (!isAuthenticated) {
-      // Show login modal or redirect to login
+      onAuthRequired && onAuthRequired();
       return;
     }
     setIsWishlisted(!isWishlisted);
@@ -144,7 +144,7 @@ export default function ProductDetails({ product, isOpen, onClose }) {
                   >
                     -
                   </button>
-                  <span className="w-12 text-center font-medium">{quantity}</span>
+                  <span className="w-12 text-center font-medium text-gray-900 text-lg">{quantity}</span>
                   <button
                     onClick={() => setQuantity(quantity + 1)}
                     className="p-2 border border-gray-300 rounded-lg hover:bg-gray-50"

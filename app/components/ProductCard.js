@@ -5,15 +5,14 @@ import { useState } from 'react';
 import { ShoppingCart, Heart, Star } from 'lucide-react';
 import { addToCart } from '../features/cart/cartSlice';
 
-export default function ProductCard({ product, onClick }) {
+export default function ProductCard({ product, onClick, onAuthRequired }) {
   const dispatch = useDispatch();
   const { isAuthenticated } = useSelector((state) => state.auth);
   const [isWishlisted, setIsWishlisted] = useState(false);
-  const [showAuthModal, setShowAuthModal] = useState(false);
 
   const handleAddToCart = () => {
     if (!isAuthenticated) {
-      setShowAuthModal(true);
+      onAuthRequired && onAuthRequired();
       return;
     }
 
@@ -28,7 +27,7 @@ export default function ProductCard({ product, onClick }) {
 
   const handleWishlist = () => {
     if (!isAuthenticated) {
-      setShowAuthModal(true);
+      onAuthRequired && onAuthRequired();
       return;
     }
     setIsWishlisted(!isWishlisted);

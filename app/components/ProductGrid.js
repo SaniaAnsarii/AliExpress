@@ -8,13 +8,12 @@ import CategoryNav from './CategoryNav';
 import { testAPI } from '../utils/apiTest';
 import { testAPIStatus } from '../services/apiService';
 
-export default function ProductGrid({ onProductClick }) {
+export default function ProductGrid({ onProductClick, onAuthRequired }) {
   const dispatch = useDispatch();
   const { products, loading, error, apiStatus } = useSelector((state) => state.products);
   const [activeCategory, setActiveCategory] = useState('all');
 
-  // Debug logging
-  console.log('🎯 ProductGrid: Current state -', {
+  console.log('ProductGrid: Current state -', {
     productsCount: products?.length || 0,
     loading,
     error,
@@ -22,13 +21,11 @@ export default function ProductGrid({ onProductClick }) {
   });
 
   useEffect(() => {
-    // Load initial products
     dispatch(fetchProductsByCategory({ categoryId: 'all', query: '' }));
   }, [dispatch]);
 
-  // Monitor state changes
   useEffect(() => {
-    console.log('🎯 ProductGrid: State changed -', {
+    console.log('ProductGrid: State changed -', {
       productsCount: products?.length || 0,
       loading,
       error,
@@ -36,29 +33,25 @@ export default function ProductGrid({ onProductClick }) {
     });
   }, [products, loading, error, apiStatus]);
 
-  // Test function to manually trigger API calls
   const testAPICall = () => {
-    console.log('🧪 Testing API call...');
+    console.log('Testing API call...');
     dispatch(fetchProductsByCategory({ categoryId: 'all', query: 'phone' }));
   };
 
-  // Direct API test function
   const directAPITest = async () => {
-    console.log('🔬 Running direct API test...');
+    console.log('Running direct API test...');
     const result = await testAPI();
-    console.log('📊 Direct API test result:', result);
+    console.log('Direct API test result:', result);
   };
 
-  // Enhanced API test function
   const enhancedAPITest = async () => {
-    console.log('🚀 Running enhanced API test...');
+    console.log('Running enhanced API test...');
     const result = await testAPIStatus();
-    console.log('📊 Enhanced API test result:', result);
+    console.log('Enhanced API test result:', result);
   };
 
-  // Test function to manually set mock data
   const setMockData = () => {
-    console.log('🧪 Manually setting mock data...');
+    console.log('Manually setting mock data...');
     const mockData = {
       data: [
         {
@@ -91,17 +84,17 @@ export default function ProductGrid({ onProductClick }) {
       source: 'mock'
     };
     
-    console.log('🧪 Dispatching action with payload:', mockData);
+    console.log('Dispatching action with payload:', mockData);
     dispatch({
       type: 'products/fetchProductsByCategory/fulfilled',
       payload: mockData
     });
-    console.log('🧪 Action dispatched');
+    console.log('Action dispatched');
   };
 
   // Retry API call function
   const retryAPICall = () => {
-    console.log('🔄 Retrying API call...');
+    console.log('Retrying API call...');
     dispatch(fetchProductsByCategory({ categoryId: activeCategory, query: '' }));
   };
 
@@ -256,17 +249,17 @@ export default function ProductGrid({ onProductClick }) {
             </div> */}
             {/* {apiStatus === 'loading' && (
               <div className="text-sm text-blue-600">
-                🔄 Loading from API...
+                Loading from API...
               </div>
             )} */}
             {/* {apiStatus === 'success' && (
               <div className="text-sm text-green-600">
-                ✅ Live data from API
+                Live data from API
               </div>
             )} */}
             {apiStatus === 'rate_limited' && (
               <div className="text-sm text-yellow-600">
-                ⚠️ Using mock data
+                Using mock data
               </div>
             )}
           </div>
@@ -274,7 +267,12 @@ export default function ProductGrid({ onProductClick }) {
         
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
           {products.map((product) => (
-            <ProductCard key={product.id} product={product} onClick={onProductClick} />
+            <ProductCard 
+              key={product.id} 
+              product={product} 
+              onClick={onProductClick} 
+              onAuthRequired={onAuthRequired}
+            />
           ))}
         </div>
       </div>

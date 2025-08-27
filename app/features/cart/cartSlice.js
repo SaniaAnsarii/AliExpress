@@ -26,7 +26,6 @@ const cartSlice = createSlice({
         });
       }
       
-      // Update totals
       state.itemCount = state.items.reduce((total, item) => total + item.quantity, 0);
       state.total = state.items.reduce((total, item) => total + (parseFloat(item.price) * item.quantity), 0);
     },
@@ -35,7 +34,6 @@ const cartSlice = createSlice({
       const itemId = action.payload;
       state.items = state.items.filter(item => item.id !== itemId);
       
-      // Update totals
       state.itemCount = state.items.reduce((total, item) => total + item.quantity, 0);
       state.total = state.items.reduce((total, item) => total + (parseFloat(item.price) * item.quantity), 0);
     },
@@ -51,7 +49,6 @@ const cartSlice = createSlice({
           item.quantity = quantity;
         }
         
-        // Update totals
         state.itemCount = state.items.reduce((total, item) => total + item.quantity, 0);
         state.total = state.items.reduce((total, item) => total + (parseFloat(item.price) * item.quantity), 0);
       }

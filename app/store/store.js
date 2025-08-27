@@ -12,7 +12,6 @@ export const store = configureStore({
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({
       serializableCheck: {
-        // Ignore these action types from Firebase auth
         ignoredActions: [
           'persist/PERSIST',
           'persist/REHYDRATE',
@@ -20,14 +19,12 @@ export const store = configureStore({
           'auth/signIn/fulfilled',
           'auth/setUser'
         ],
-        // Ignore these field paths in all actions
         ignoredActionsPaths: ['meta.arg', 'payload.timestamp'],
-        // Ignore these paths in the state
         ignoredPaths: ['items.dates'],
       },
     }),
 });
 
-// Export types for use in components (JavaScript style)
+
 export const getState = store.getState;
 export const dispatch = store.dispatch;

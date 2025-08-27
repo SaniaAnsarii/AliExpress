@@ -8,13 +8,12 @@ import {
   updateProfile
 } from 'firebase/auth';
 
-// Async thunks for authentication
+
 export const signUp = createAsyncThunk(
   'auth/signUp',
   async ({ email, password }, { rejectWithValue }) => {
     try {
       const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-      // Return only serializable user data
       return {
         uid: userCredential.user.uid,
         email: userCredential.user.email,
@@ -33,7 +32,6 @@ export const signIn = createAsyncThunk(
   async ({ email, password }, { rejectWithValue }) => {
     try {
       const userCredential = await signInWithEmailAndPassword(auth, email, password);
-      // Return only serializable user data
       return {
         uid: userCredential.user.uid,
         email: userCredential.user.email,
@@ -72,7 +70,7 @@ export const updateUserProfile = createAsyncThunk(
         photoURL: photoURL || user.photoURL
       });
       
-      // Return updated user data
+
       return {
         uid: user.uid,
         email: user.email,
@@ -148,7 +146,7 @@ const authSlice = createSlice({
         state.loading = false;
         state.error = action.payload;
       })
-      // Update Profile
+  
       .addCase(updateUserProfile.pending, (state) => {
         state.loading = true;
         state.error = null;

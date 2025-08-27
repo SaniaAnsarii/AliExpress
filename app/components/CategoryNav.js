@@ -18,7 +18,6 @@ export default function CategoryNav({ activeCategory, onCategoryChange }) {
   const { categories } = useSelector((state) => state.products);
 
   useEffect(() => {
-    // Fetch categories on component mount
     dispatch(fetchCategories());
   }, [dispatch]);
 
@@ -27,7 +26,6 @@ export default function CategoryNav({ activeCategory, onCategoryChange }) {
     dispatch(fetchProductsByCategory({ categoryId, query: '' }));
   };
 
-  // Use API categories if available, otherwise use default categories
   const displayCategories = categories.length > 0 ? categories : defaultCategories;
 
   return (

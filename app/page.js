@@ -50,7 +50,10 @@ export default function Home() {
         onSearchClick={handleSearchClick}
         onProfileClick={handleProfileClick}
       />
-      <ProductGrid onProductClick={handleProductClick} />
+      <ProductGrid 
+        onProductClick={handleProductClick} 
+        onAuthRequired={handleAuthClick}
+      />
       
       {/* Modals */}
       {showLoginModal && (
@@ -83,7 +86,8 @@ export default function Home() {
         <ProductDetails 
           product={selectedProduct}
           isOpen={showProductDetails} 
-          onClose={() => setShowProductDetails(false)} 
+          onClose={() => setShowProductDetails(false)}
+          onAuthRequired={handleAuthClick}
         />
       )}
       
