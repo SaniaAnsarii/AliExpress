@@ -92,7 +92,7 @@ export default function Cart({ isOpen, onClose }) {
         {items.length > 0 && (
           <div className="p-6 border-t bg-gray-50">
             <div className="flex justify-between items-center mb-4">
-              <span className="text-lg font-semibold">Total ({itemCount} items):</span>
+              <span className="text-lg text-black font-semibold">Total ({itemCount} items):</span>
               <span className="text-xl font-bold text-red-600">
                 ${total.toFixed(2)}
               </span>
