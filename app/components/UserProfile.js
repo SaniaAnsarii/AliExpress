@@ -1,15 +1,24 @@
 'use client';
 
+import { useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { signOut } from 'firebase/auth';
 import { auth } from '../services/firebase';
 import { setUser } from '../features/auth/authSlice';
 import { clearCart } from '../features/cart/cartSlice';
+import { setWishlistModal } from '../features/wishlist/wishlistSlice';
 import { X, User, Mail, LogOut, Settings, Package, Heart } from 'lucide-react';
+import ProfileUpdateModal from './ProfileUpdateModal';
+import WishlistModal from './WishlistModal';
+import OrdersModal from './OrdersModal';
 
 export default function UserProfile({ isOpen, onClose }) {
   const dispatch = useDispatch();
   const { user } = useSelector((state) => state.auth);
+  const { isOpen: wishlistOpen } = useSelector((state) => state.wishlist);
+  
+  const [profileUpdateOpen, setProfileUpdateOpen] = useState(false);
+  const [ordersOpen, setOrdersOpen] = useState(false);
 
   const handleLogout = async () => {
     try {
@@ -20,6 +29,18 @@ export default function UserProfile({ isOpen, onClose }) {
     } catch (error) {
       console.error('Logout error:', error);
     }
+  };
+
+  const handleAccountSettings = () => {
+    setProfileUpdateOpen(true);
+  };
+
+  const handleMyOrders = () => {
+    setOrdersOpen(true);
+  };
+
+  const handleWishlist = () => {
+    dispatch(setWishlistModal(true));
   };
 
   if (!isOpen) return null;
@@ -62,17 +83,26 @@ export default function UserProfile({ isOpen, onClose }) {
 
           {/* Profile Options */}
           <div className="space-y-2">
-            <button className="w-full flex items-center gap-3 p-3 text-left text-gray-700 hover:bg-gray-50 rounded-lg transition-colors">
+            <button 
+              onClick={handleAccountSettings}
+              className="w-full flex items-center gap-3 p-3 text-left text-gray-700 hover:bg-gray-50 rounded-lg transition-colors"
+            >
               <Settings size={20} />
               <span>Account Settings</span>
             </button>
             
-            <button className="w-full flex items-center gap-3 p-3 text-left text-gray-700 hover:bg-gray-50 rounded-lg transition-colors">
+            <button 
+              onClick={handleMyOrders}
+              className="w-full flex items-center gap-3 p-3 text-left text-gray-700 hover:bg-gray-50 rounded-lg transition-colors"
+            >
               <Package size={20} />
               <span>My Orders</span>
             </button>
             
-            <button className="w-full flex items-center gap-3 p-3 text-left text-gray-700 hover:bg-gray-50 rounded-lg transition-colors">
+            <button 
+              onClick={handleWishlist}
+              className="w-full flex items-center gap-3 p-3 text-left text-gray-700 hover:bg-gray-50 rounded-lg transition-colors"
+            >
               <Heart size={20} />
               <span>Wishlist</span>
             </button>
@@ -90,6 +120,22 @@ export default function UserProfile({ isOpen, onClose }) {
           </div>
         </div>
       </div>
+
+      {/* Modals */}
+      <ProfileUpdateModal 
+        isOpen={profileUpdateOpen} 
+        onClose={() => setProfileUpdateOpen(false)} 
+      />
+      
+      <WishlistModal 
+        isOpen={wishlistOpen} 
+        onClose={() => dispatch(setWishlistModal(false))} 
+      />
+      
+      <OrdersModal 
+        isOpen={ordersOpen} 
+        onClose={() => setOrdersOpen(false)} 
+      />
     </div>
   );
 }

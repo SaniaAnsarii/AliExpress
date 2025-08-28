@@ -2,14 +2,17 @@
 
 import { useDispatch, useSelector } from 'react-redux';
 import { addToCart } from '../features/cart/cartSlice';
+import { toggleWishlist } from '../features/wishlist/wishlistSlice';
 import { X, Star, ShoppingCart, Heart } from 'lucide-react';
 import { useState } from 'react';
 
 export default function ProductDetails({ product, isOpen, onClose, onAuthRequired }) {
   const dispatch = useDispatch();
   const { isAuthenticated } = useSelector((state) => state.auth);
+  const { items: wishlistItems } = useSelector((state) => state.wishlist);
   const [quantity, setQuantity] = useState(1);
-  const [isWishlisted, setIsWishlisted] = useState(false);
+  
+  const isWishlisted = wishlistItems.includes(product.id);
 
   const handleAddToCart = () => {
     if (!isAuthenticated) {
@@ -33,7 +36,7 @@ export default function ProductDetails({ product, isOpen, onClose, onAuthRequire
       onAuthRequired && onAuthRequired();
       return;
     }
-    setIsWishlisted(!isWishlisted);
+    dispatch(toggleWishlist(product.id));
   };
 
   if (!isOpen || !product) return null;

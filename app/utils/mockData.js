@@ -415,3 +415,99 @@ export const getCategoryIcon = (category) => {
   };
   return iconMap[category.toLowerCase()] || iconMap.default;
 };
+
+// Mock order data
+export const mockOrders = [
+  {
+    id: 'ORD-001',
+    date: '2024-01-15',
+    status: 'delivered',
+    total: 1199.99,
+    items: [
+      {
+        id: 1,
+        title: "iPhone 15 Pro Max 256GB Titanium",
+        price: 1199.99,
+        quantity: 1,
+        image: "https://images.unsplash.com/photo-1592750475338-74b7b21085ab?w=400&h=400&fit=crop"
+      }
+    ],
+    shippingAddress: {
+      name: "Sania Ansari",
+      street: "123 Main Street",
+      city: "New York",
+      state: "NY",
+      zipCode: "10001",
+      country: "USA"
+    }
+  },
+  {
+    id: 'ORD-002',
+    date: '2024-01-10',
+    status: 'shipped',
+    total: 349.99,
+    items: [
+      {
+        id: 4,
+        title: "Sony WH-1000XM5 Wireless Noise Canceling Headphones",
+        price: 349.99,
+        quantity: 1,
+        image: "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=400&h=400&fit=crop"
+      }
+    ],
+    shippingAddress: {
+      name: "Sania Ansari",
+      street: "123 Main Street",
+      city: "New York",
+      state: "NY",
+      zipCode: "10001",
+      country: "USA"
+    }
+  },
+  {
+    id: 'ORD-003',
+    date: '2024-01-05',
+    status: 'processing',
+    total: 89.99,
+    items: [
+      {
+        id: 15,
+        title: "Levi's 501 Original Jeans",
+        price: 89.99,
+        quantity: 1,
+        image: "https://images.unsplash.com/photo-1542272604-787c3835535d?w=400&h=400&fit=crop"
+      }
+    ],
+    shippingAddress: {
+      name: "Sania Ansari",
+      street: "123 Main Street",
+      city: "New York",
+      state: "NY",
+      zipCode: "10001",
+      country: "USA"
+    }
+  },
+  {
+    id: 'ORD-004',
+    date: '2023-12-28',
+    status: 'delivered',
+    total: 279.99,
+    items: [
+      {
+        id: 11,
+        title: "Bose QuietComfort 45 Wireless Headphones",
+        price: 279.99,
+        quantity: 1,
+        image: "https://images.unsplash.com/photo-1484704849700-f032a568e944?w=400&h=400&fit=crop"
+      }
+    ],
+    shippingAddress: {
+      name: "Sania Ansari",
+      street: "123 Main Street",
+      city: "New York",
+      state: "NY",
+      zipCode: "10001",
+      country: "USA"
+    }
+  }
+];

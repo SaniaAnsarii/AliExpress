@@ -2,15 +2,17 @@
 
 import { useSelector } from 'react-redux';
 import { useState } from 'react';
-import { ShoppingCart, Search, User, Menu, X } from 'lucide-react';
+import { ShoppingCart, Search, User, Menu, X, Heart } from 'lucide-react';
 
-export default function Header({ onAuthClick, onCartClick, onSearchClick, onProfileClick }) {
+export default function Header({ onAuthClick, onCartClick, onSearchClick, onProfileClick, onWishlistClick }) {
   const { user, isAuthenticated } = useSelector((state) => state.auth);
   const { items } = useSelector((state) => state.cart);
+  const { items: wishlistItems } = useSelector((state) => state.wishlist);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
 
   const cartItemCount = items.reduce((total, item) => total + item.quantity, 0);
+  const wishlistItemCount = wishlistItems.length;
 
   const handleSearch = (e) => {
     e.preventDefault();
@@ -51,6 +53,21 @@ export default function Header({ onAuthClick, onCartClick, onSearchClick, onProf
 
           {/* Navigation - Desktop */}
           <div className="hidden md:flex items-center space-x-6">
+            {/* Wishlist */}
+            {isAuthenticated && (
+              <button 
+                onClick={onWishlistClick}
+                className="relative p-2 text-gray-600 hover:text-red-600 transition-colors cursor-pointer"
+              >
+                <Heart size={24} />
+                {wishlistItemCount > 0 && (
+                  <span className="absolute -top-1 -right-1 bg-red-600 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
+                    {wishlistItemCount}
+                  </span>
+                )}
+              </button>
+            )}
+
             {/* Cart */}
             <button 
               onClick={onCartClick}
@@ -136,13 +153,25 @@ export default function Header({ onAuthClick, onCartClick, onSearchClick, onProf
 
             {/* Mobile Navigation */}
             <div className="space-y-4">
-                             <button 
-                 onClick={onCartClick}
-                 className="flex items-center space-x-2 text-gray-600 hover:text-red-600 cursor-pointer"
-               >
-                 <ShoppingCart size={20} />
-                 <span>Cart ({cartItemCount})</span>
-               </button>
+              {/* Wishlist - Mobile */}
+              {isAuthenticated && (
+                <button 
+                  onClick={onWishlistClick}
+                  className="flex items-center space-x-2 text-gray-600 hover:text-red-600 cursor-pointer"
+                >
+                  <Heart size={20} />
+                  <span>Wishlist ({wishlistItemCount})</span>
+                </button>
+              )}
+
+              {/* Cart - Mobile */}
+              <button 
+                onClick={onCartClick}
+                className="flex items-center space-x-2 text-gray-600 hover:text-red-600 cursor-pointer"
+              >
+                <ShoppingCart size={20} />
+                <span>Cart ({cartItemCount})</span>
+              </button>
 
                              {isAuthenticated ? (
                  <div className="space-y-2">

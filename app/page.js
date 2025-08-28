@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import Header from './components/Header';
 import ProductGrid from './components/ProductGrid';
 import LoginModal from './components/LoginModal';
@@ -10,9 +10,13 @@ import Cart from './components/Cart';
 import ProductDetails from './components/ProductDetails';
 import Search from './components/Search';
 import UserProfile from './components/UserProfile';
+import WishlistModal from './components/WishlistModal';
+import { setWishlistModal } from './features/wishlist/wishlistSlice';
 
 export default function Home() {
+  const dispatch = useDispatch();
   const { isAuthenticated } = useSelector((state) => state.auth);
+  const { isOpen: showWishlist } = useSelector((state) => state.wishlist);
   const [showLoginModal, setShowLoginModal] = useState(false);
   const [showSignupModal, setShowSignupModal] = useState(false);
   const [showCart, setShowCart] = useState(false);
@@ -42,6 +46,10 @@ export default function Home() {
     setShowProfile(true);
   };
 
+  const handleWishlistClick = () => {
+    dispatch(setWishlistModal(true));
+  };
+
   return (
     <div className="min-h-screen bg-gray-50">
       <Header 
@@ -49,6 +57,7 @@ export default function Home() {
         onCartClick={handleCartClick}
         onSearchClick={handleSearchClick}
         onProfileClick={handleProfileClick}
+        onWishlistClick={handleWishlistClick}
       />
       <ProductGrid 
         onProductClick={handleProductClick} 
@@ -97,6 +106,13 @@ export default function Home() {
       
       {showProfile && (
         <UserProfile isOpen={showProfile} onClose={() => setShowProfile(false)} />
+      )}
+      
+      {showWishlist && (
+        <WishlistModal 
+          isOpen={showWishlist} 
+          onClose={() => dispatch(setWishlistModal(false))} 
+        />
       )}
     </div>
   );
