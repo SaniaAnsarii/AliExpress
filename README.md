@@ -4,7 +4,7 @@ A full-featured e-commerce web application inspired by AliExpress, built with mo
 
 ## 🚀 Live Demo
 
-[Live Demo Link](#) <!-- Add your deployed link here -->
+[Live Demo Link](https://ali-express-six.vercel.app/) <!-- Add your deployed link here -->
 
 
 ## ✨ Features
