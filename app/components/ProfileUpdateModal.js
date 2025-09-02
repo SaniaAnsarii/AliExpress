@@ -2,9 +2,7 @@
 
 import { useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { updateProfile } from 'firebase/auth';
-import { auth } from '../services/firebase';
-import { setUser } from '../features/auth/authSlice';
+import { updateUserProfile } from '../features/auth/authSlice';
 import { X, User, Mail, Save } from 'lucide-react';
 
 export default function ProfileUpdateModal({ isOpen, onClose }) {
@@ -32,30 +30,19 @@ export default function ProfileUpdateModal({ isOpen, onClose }) {
     setMessage('');
 
     try {
-      const currentUser = auth.currentUser;
-      if (!currentUser) {
-        throw new Error('No user logged in');
-      }
-
-      // Update display name
-      if (formData.displayName !== user?.displayName) {
-        await updateProfile(currentUser, {
-          displayName: formData.displayName
-        });
-      }
-
-      // Update user in Redux store
-      dispatch(setUser({
-        ...user,
-        displayName: formData.displayName,
-        email: formData.email
+      const result = await dispatch(updateUserProfile({
+        displayName: formData.displayName
       }));
 
-      setMessage('Profile updated successfully!');
-      setTimeout(() => {
-        onClose();
-        setMessage('');
-      }, 1500);
+      if (updateUserProfile.fulfilled.match(result)) {
+        setMessage('Profile updated successfully!');
+        setTimeout(() => {
+          onClose();
+          setMessage('');
+        }, 1500);
+      } else {
+        setMessage('Failed to update profile. Please try again.');
+      }
 
     } catch (error) {
       console.error('Profile update error:', error);

@@ -1,26 +1,32 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import { auth } from '../../services/firebase';
-import { 
-  createUserWithEmailAndPassword, 
-  signInWithEmailAndPassword, 
-  signOut,
-  onAuthStateChanged,
-  updateProfile
-} from 'firebase/auth';
 
 
+// TODO: Implement backend API calls for authentication
 export const signUp = createAsyncThunk(
   'auth/signUp',
-  async ({ email, password }, { rejectWithValue }) => {
+  async ({ email, password, displayName }, { rejectWithValue }) => {
     try {
-      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-      return {
-        uid: userCredential.user.uid,
-        email: userCredential.user.email,
-        displayName: userCredential.user.displayName,
-        photoURL: userCredential.user.photoURL,
-        emailVerified: userCredential.user.emailVerified
-      };
+      // Backend API call
+      const response = await fetch('http://localhost:5000/api/auth/signup', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email, password, displayName }),
+      });
+      
+      if (!response.ok) {
+        throw new Error('Sign up failed');
+      }
+      
+      const data = await response.json();
+      
+      // Store JWT token in localStorage
+      if (data.token) {
+        localStorage.setItem('authToken', data.token);
+      }
+      
+      return data.user;
     } catch (error) {
       return rejectWithValue(error.message);
     }
@@ -31,14 +37,27 @@ export const signIn = createAsyncThunk(
   'auth/signIn',
   async ({ email, password }, { rejectWithValue }) => {
     try {
-      const userCredential = await signInWithEmailAndPassword(auth, email, password);
-      return {
-        uid: userCredential.user.uid,
-        email: userCredential.user.email,
-        displayName: userCredential.user.displayName,
-        photoURL: userCredential.user.photoURL,
-        emailVerified: userCredential.user.emailVerified
-      };
+      // Backend API call
+      const response = await fetch('http://localhost:5000/api/auth/signin', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email, password }),
+      });
+      
+      if (!response.ok) {
+        throw new Error('Sign in failed');
+      }
+      
+      const data = await response.json();
+      
+      // Store JWT token in localStorage
+      if (data.token) {
+        localStorage.setItem('authToken', data.token);
+      }
+      
+      return data.user;
     } catch (error) {
       return rejectWithValue(error.message);
     }
@@ -49,7 +68,19 @@ export const signOutUser = createAsyncThunk(
   'auth/signOut',
   async (_, { rejectWithValue }) => {
     try {
-      await signOut(auth);
+      // Get token from localStorage
+      const token = localStorage.getItem('authToken');
+      
+      // Backend API call
+      await fetch('http://localhost:5000/api/auth/signout', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+        },
+      });
+      
+      // Remove token from localStorage
+      localStorage.removeItem('authToken');
     } catch (error) {
       return rejectWithValue(error.message);
     }
@@ -60,24 +91,25 @@ export const updateUserProfile = createAsyncThunk(
   'auth/updateProfile',
   async ({ displayName, photoURL }, { rejectWithValue }) => {
     try {
-      const user = auth.currentUser;
-      if (!user) {
-        throw new Error('No user is signed in');
-      }
+      // Get token from localStorage
+      const token = localStorage.getItem('authToken');
       
-      await updateProfile(user, {
-        displayName: displayName || user.displayName,
-        photoURL: photoURL || user.photoURL
+      // Backend API call
+      const response = await fetch('http://localhost:5000/api/auth/profile', {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+        },
+        body: JSON.stringify({ displayName, photoURL }),
       });
       
-
-      return {
-        uid: user.uid,
-        email: user.email,
-        displayName: displayName || user.displayName,
-        photoURL: photoURL || user.photoURL,
-        emailVerified: user.emailVerified
-      };
+      if (!response.ok) {
+        throw new Error('Profile update failed');
+      }
+      
+      const user = await response.json();
+      return user;
     } catch (error) {
       return rejectWithValue(error.message);
     }

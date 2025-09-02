@@ -3,31 +3,33 @@
 import { Provider } from 'react-redux';
 import { store } from './store/store';
 import { useEffect } from 'react';
-import { useDispatch } from 'react-redux';
-import { auth } from './services/firebase';
-import { onAuthStateChanged } from 'firebase/auth';
+import { useDispatch, useSelector } from 'react-redux';
 import { setUser } from './features/auth/authSlice';
+import { fetchCart } from './features/cart/cartSlice';
+import { fetchWishlist } from './features/wishlist/wishlistSlice';
 
 function AuthListener({ children }) {
   const dispatch = useDispatch();
+  const { isAuthenticated } = useSelector((state) => state.auth);
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
-      if (user) {
-        dispatch(setUser({
-          uid: user.uid,
-          email: user.email,
-          displayName: user.displayName,
-          photoURL: user.photoURL,
-          emailVerified: user.emailVerified
-        }));
-      } else {
-        dispatch(setUser(null));
-      }
-    });
-
-    return () => unsubscribe();
+    // Check for stored authentication token and validate with backend
+    const token = localStorage.getItem('authToken');
+    if (token) {
+      // TODO: Validate token with backend and set user
+      // For now, we'll just clear any stored token
+      localStorage.removeItem('authToken');
+      dispatch(setUser(null));
+    }
   }, [dispatch]);
+
+  // Load cart and wishlist when user is authenticated
+  useEffect(() => {
+    if (isAuthenticated) {
+      dispatch(fetchCart());
+      dispatch(fetchWishlist());
+    }
+  }, [isAuthenticated, dispatch]);
 
   useEffect(() => {
     const removeDevIndicator = () => {

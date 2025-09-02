@@ -2,9 +2,7 @@
 
 import { useState } from 'react';
 import { useDispatch } from 'react-redux';
-import { signInWithEmailAndPassword } from 'firebase/auth';
-import { auth } from '../services/firebase';
-import { setUser } from '../features/auth/authSlice';
+import { signIn } from '../features/auth/authSlice';
 import { X, Mail, Lock, Eye, EyeOff } from 'lucide-react';
 
 export default function LoginModal({ isOpen, onClose, onSwitchToSignup }) {
@@ -22,21 +20,16 @@ export default function LoginModal({ isOpen, onClose, onSwitchToSignup }) {
     setError('');
 
     try {
-      const userCredential = await signInWithEmailAndPassword(auth, email, password);
-      const user = userCredential.user;
+      const result = await dispatch(signIn({ email, password }));
       
-      dispatch(setUser({
-        uid: user.uid,
-        email: user.email,
-        displayName: user.displayName,
-        photoURL: user.photoURL,
-        emailVerified: user.emailVerified
-      }));
-      
-      onClose();
+      if (signIn.fulfilled.match(result)) {
+        onClose();
+      } else {
+        setError(result.payload || 'Login failed');
+      }
     } catch (error) {
       console.error('Login error:', error);
-      setError(error.message);
+      setError('Login failed. Please try again.');
     } finally {
       setLoading(false);
     }

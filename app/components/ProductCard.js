@@ -2,15 +2,15 @@
 
 import { useDispatch, useSelector } from 'react-redux';
 import { ShoppingCart, Heart, Star } from 'lucide-react';
-import { addToCart } from '../features/cart/cartSlice';
-import { toggleWishlist } from '../features/wishlist/wishlistSlice';
+import { addToCart, addToCartAPI } from '../features/cart/cartSlice';
+import { toggleWishlist, toggleWishlistAPI } from '../features/wishlist/wishlistSlice';
 
 export default function ProductCard({ product, onClick, onAuthRequired }) {
   const dispatch = useDispatch();
   const { isAuthenticated } = useSelector((state) => state.auth);
   const { items: wishlistItems } = useSelector((state) => state.wishlist);
   
-  const isWishlisted = wishlistItems.includes(product.id);
+  const isWishlisted = wishlistItems.some(item => item.id === product.id);
 
   const handleAddToCart = () => {
     if (!isAuthenticated) {
@@ -18,6 +18,20 @@ export default function ProductCard({ product, onClick, onAuthRequired }) {
       return;
     }
 
+    // Use API call for database persistence
+    dispatch(addToCartAPI({
+      productId: product.id,
+      quantity: 1,
+      productData: {
+        title: product.title,
+        price: product.price,
+        imageUrl: product.image,
+        category: product.category || 'General',
+        stockQuantity: product.stockQuantity || 100
+      }
+    }));
+
+    // Also update local state for immediate UI feedback
     dispatch(addToCart({
       id: product.id,
       title: product.title,
@@ -32,6 +46,20 @@ export default function ProductCard({ product, onClick, onAuthRequired }) {
       onAuthRequired && onAuthRequired();
       return;
     }
+    
+    // Use API call for database persistence
+    dispatch(toggleWishlistAPI({
+      productId: product.id,
+      productData: {
+        title: product.title,
+        price: product.price,
+        imageUrl: product.image,
+        category: product.category || 'General',
+        stockQuantity: product.stockQuantity || 100
+      }
+    }));
+    
+    // Also update local state for immediate UI feedback
     dispatch(toggleWishlist(product.id));
   };
 

@@ -2,9 +2,7 @@
 
 import { useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { signOut } from 'firebase/auth';
-import { auth } from '../services/firebase';
-import { setUser } from '../features/auth/authSlice';
+import { signOutUser } from '../features/auth/authSlice';
 import { clearCart } from '../features/cart/cartSlice';
 import { setWishlistModal } from '../features/wishlist/wishlistSlice';
 import { X, User, Mail, LogOut, Settings, Package, Heart } from 'lucide-react';
@@ -22,8 +20,7 @@ export default function UserProfile({ isOpen, onClose }) {
 
   const handleLogout = async () => {
     try {
-      await signOut(auth);
-      dispatch(setUser(null));
+      await dispatch(signOutUser());
       dispatch(clearCart());
       onClose();
     } catch (error) {
