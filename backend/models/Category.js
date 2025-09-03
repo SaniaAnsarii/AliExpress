@@ -14,7 +14,8 @@ const categorySchema = new mongoose.Schema({
     type: String,
     required: true,
     unique: true,
-    trim: true
+    trim: true,
+    index: true
   },
   parentId: {
     type: mongoose.Schema.Types.ObjectId,
@@ -30,7 +31,6 @@ const categorySchema = new mongoose.Schema({
 });
 
 // Create indexes for better performance
-categorySchema.index({ slug: 1 });
 categorySchema.index({ parentId: 1 });
 categorySchema.index({ isActive: 1 });
 

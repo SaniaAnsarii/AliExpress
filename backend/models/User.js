@@ -7,7 +7,8 @@ const userSchema = new mongoose.Schema({
     required: true,
     unique: true,
     lowercase: true,
-    trim: true
+    trim: true,
+    index: true
   },
   password: {
     type: String,
@@ -35,8 +36,7 @@ const userSchema = new mongoose.Schema({
   timestamps: true
 });
 
-// Index for faster email lookups
-userSchema.index({ email: 1 });
+// Email index is already defined in the schema above
 
 // Hash password before saving
 userSchema.pre('save', async function(next) {
