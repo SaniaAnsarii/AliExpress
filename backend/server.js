@@ -23,13 +23,8 @@ app.use(limiter);
 app.use(cors({
   origin: [
     'http://localhost:3000',
-    'http://localhost:3001',
-    'http://localhost:3002',
-    'http://localhost:3003',
-    'https://aliexpress-frontend.onrender.com',
-    'https://aliexpress-1.onrender.com',
+   'https://aliexpress-1.onrender.com',
     'https://ali-express-six.vercel.app',
-    'https://*.vercel.app'
   ],
   credentials: true
 }));
