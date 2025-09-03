@@ -19,7 +19,7 @@ const getEnvironmentConfig = () => {
   
   // Development
   return {
-    apiUrl: 'http://localhost:5000',
+    apiUrl: process.env.NEXT_PUBLIC_API_URL || 'https://aliexpress-1.onrender.com',
     corsOrigin: 'http://localhost:3000'
   };
 };
