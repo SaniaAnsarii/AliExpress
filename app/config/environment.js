@@ -5,8 +5,8 @@ const getEnvironmentConfig = () => {
   
   if (isProduction && isRender) {
     return {
-      apiUrl: 'https://aliexpress-backend.onrender.com',
-      corsOrigin: 'https://aliexpress-frontend.onrender.com'
+      apiUrl: 'https://aliexpress-1.onrender.com',
+      corsOrigin: 'https://aliexpress-1.onrender.com'
     };
   }
   

@@ -9,7 +9,7 @@ services:
       - key: NODE_ENV
         value: production
       - key: NEXT_PUBLIC_API_URL
-        value: https://aliexpress-backend.onrender.com
+        value: https://aliexpress-1.onrender.com
     routes:
       - type: rewrite
         source: /api/*
@@ -31,4 +31,4 @@ services:
       - key: JWT_EXPIRES_IN
         value: 7d
       - key: CORS_ORIGIN
-        value: https://aliexpress-frontend.onrender.com
+        value: https://aliexpress-1.onrender.com
