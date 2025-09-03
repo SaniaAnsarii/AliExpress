@@ -1,8 +1,9 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import Header from './components/Header';
+import CategoryNav from './components/CategoryNav';
 import ProductGrid from './components/ProductGrid';
 import LoginModal from './components/LoginModal';
 import SignupModal from './components/SignupModal';
@@ -12,6 +13,7 @@ import Search from './components/Search';
 import UserProfile from './components/UserProfile';
 import WishlistModal from './components/WishlistModal';
 import { setWishlistModal } from './features/wishlist/wishlistSlice';
+import { fetchCategories } from './features/products/productSlice';
 
 export default function Home() {
   const dispatch = useDispatch();
@@ -24,6 +26,12 @@ export default function Home() {
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [showSearch, setShowSearch] = useState(false);
   const [showProfile, setShowProfile] = useState(false);
+  const [activeCategory, setActiveCategory] = useState('all');
+
+  // Load categories when component mounts
+  useEffect(() => {
+    dispatch(fetchCategories());
+  }, [dispatch]);
 
   const handleProductClick = (product) => {
     setSelectedProduct(product);
@@ -50,6 +58,10 @@ export default function Home() {
     dispatch(setWishlistModal(true));
   };
 
+  const handleCategoryChange = (categoryId) => {
+    setActiveCategory(categoryId);
+  };
+
   return (
     <div className="min-h-screen bg-gray-50">
       <Header 
@@ -59,9 +71,14 @@ export default function Home() {
         onProfileClick={handleProfileClick}
         onWishlistClick={handleWishlistClick}
       />
+      
+      <CategoryNav 
+        activeCategory={activeCategory}
+        onCategoryChange={handleCategoryChange}
+      />
+      
       <ProductGrid 
-        onProductClick={handleProductClick} 
-        onAuthRequired={handleAuthClick}
+        activeCategory={activeCategory}
       />
       
       {/* Modals */}
@@ -101,17 +118,27 @@ export default function Home() {
       )}
       
       {showSearch && (
-        <Search isOpen={showSearch} onClose={() => setShowSearch(false)} />
+        <Search 
+          isOpen={showSearch} 
+          onClose={() => setShowSearch(false)}
+          onProductClick={handleProductClick}
+        />
       )}
       
       {showProfile && (
-        <UserProfile isOpen={showProfile} onClose={() => setShowProfile(false)} />
+        <UserProfile 
+          isOpen={showProfile} 
+          onClose={() => setShowProfile(false)}
+          onAuthRequired={handleAuthClick}
+        />
       )}
       
       {showWishlist && (
         <WishlistModal 
           isOpen={showWishlist} 
-          onClose={() => dispatch(setWishlistModal(false))} 
+          onClose={() => dispatch(setWishlistModal(false))}
+          onProductClick={handleProductClick}
+          onAuthRequired={handleAuthClick}
         />
       )}
     </div>

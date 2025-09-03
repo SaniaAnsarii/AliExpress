@@ -12,14 +12,12 @@ const connectDB = async () => {
   }
 };
 
-// Note: This script is no longer needed since products come from RapidAPI
-// Keeping it as a placeholder for potential future use
 
 const seedDatabase = async () => {
   try {
     await connectDB();
     
-    console.log('Database seeding is no longer needed since products come from RapidAPI');
+    console.log('Database seeding is no longer needed since products come from external API');
     console.log('This script is kept as a placeholder for potential future use');
     
   } catch (error) {

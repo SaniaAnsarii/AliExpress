@@ -6,7 +6,7 @@ const { authenticateToken } = require('../config/jwt');
 
 const router = express.Router();
 
-// Get user's orders
+
 router.get('/', authenticateToken, async (req, res) => {
   try {
     const { page = 1, limit = 10 } = req.query;
@@ -47,12 +47,11 @@ router.get('/', authenticateToken, async (req, res) => {
   }
 });
 
-// Get single order details
+
 router.get('/:orderId', authenticateToken, async (req, res) => {
   try {
     const { orderId } = req.params;
 
-    // Get order details
     const orderResult = await pool.query(
       'SELECT * FROM orders WHERE id = $1 AND user_id = $2',
       [orderId, req.user.id]
@@ -64,7 +63,6 @@ router.get('/:orderId', authenticateToken, async (req, res) => {
 
     const order = orderResult.rows[0];
 
-    // Get order items
     const itemsResult = await pool.query(
       `SELECT oi.*, p.title, p.image_url
        FROM order_items oi
@@ -83,7 +81,6 @@ router.get('/:orderId', authenticateToken, async (req, res) => {
   }
 });
 
-// Create new order
 router.post('/create', authenticateToken, [
   body('shippingAddress').isObject(),
   body('billingAddress').isObject(),
@@ -117,7 +114,6 @@ router.post('/create', authenticateToken, [
     const cartItems = cartResult.rows;
     let totalAmount = 0;
 
-    // Validate stock and calculate total
     for (const item of cartItems) {
       if (item.stock_quantity < item.quantity) {
         await client.query('ROLLBACK');
@@ -128,10 +124,8 @@ router.post('/create', authenticateToken, [
       totalAmount += parseFloat(item.price) * item.quantity;
     }
 
-    // Generate order number
     const orderNumber = `ORD-${Date.now()}-${Math.random().toString(36).substr(2, 9).toUpperCase()}`;
 
-    // Create order
     const orderResult = await client.query(
       `INSERT INTO orders (user_id, order_number, total_amount, shipping_address, billing_address, payment_method)
        VALUES ($1, $2, $3, $4, $5, $6)
@@ -141,21 +135,18 @@ router.post('/create', authenticateToken, [
 
     const order = orderResult.rows[0];
 
-    // Create order items and update stock
     for (const item of cartItems) {
       await client.query(
         'INSERT INTO order_items (order_id, product_id, quantity, price) VALUES ($1, $2, $3, $4)',
         [order.id, item.product_id, item.quantity, item.price]
       );
 
-      // Update product stock
       await client.query(
         'UPDATE products SET stock_quantity = stock_quantity - $1 WHERE id = $2',
         [item.quantity, item.product_id]
       );
     }
 
-    // Clear user's cart
     await client.query(
       'DELETE FROM cart_items WHERE user_id = $1',
       [req.user.id]
@@ -177,7 +168,6 @@ router.post('/create', authenticateToken, [
   }
 });
 
-// Update order status (admin only - would need admin authentication)
 router.put('/:orderId/status', authenticateToken, [
   body('status').isIn(['pending', 'processing', 'shipped', 'delivered', 'cancelled'])
 ], async (req, res) => {
@@ -190,7 +180,6 @@ router.put('/:orderId/status', authenticateToken, [
     const { orderId } = req.params;
     const { status } = req.body;
 
-    // Check if order exists and belongs to user
     const orderResult = await pool.query(
       'SELECT id FROM orders WHERE id = $1 AND user_id = $2',
       [orderId, req.user.id]
@@ -200,7 +189,6 @@ router.put('/:orderId/status', authenticateToken, [
       return res.status(404).json({ error: 'Order not found' });
     }
 
-    // Update order status
     const result = await pool.query(
       'UPDATE orders SET status = $1, updated_at = CURRENT_TIMESTAMP WHERE id = $2 RETURNING *',
       [status, orderId]

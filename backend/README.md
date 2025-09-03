@@ -48,7 +48,6 @@ The database includes the following collections:
      ```
 
 3. **Environment Configuration**
-   - Copy `env.example` to `.env`
    - Update the database credentials and JWT secret
 
 4. **Start the Server**

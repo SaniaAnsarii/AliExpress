@@ -1,13 +1,12 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 
 const initialState = {
-  items: [], // Array of product objects that are wishlisted
-  isOpen: false, // For wishlist modal
+  items: [], 
+  isOpen: false, 
   loading: false,
   error: null
 };
 
-// Async thunks for API calls
 export const fetchWishlist = createAsyncThunk(
   'wishlist/fetchWishlist',
   async (_, { rejectWithValue }) => {

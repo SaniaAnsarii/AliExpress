@@ -22,7 +22,6 @@ const clearDatabase = async () => {
     
     console.log('Clearing database...');
     
-    // Clear all collections
     await User.deleteMany({});
     await CartItem.deleteMany({});
     await Wishlist.deleteMany({});

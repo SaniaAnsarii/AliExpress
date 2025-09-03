@@ -5,12 +5,15 @@ import { ShoppingCart, Heart, Star } from 'lucide-react';
 import { addToCart, addToCartAPI } from '../features/cart/cartSlice';
 import { toggleWishlist, toggleWishlistAPI } from '../features/wishlist/wishlistSlice';
 
-export default function ProductCard({ product, onClick, onAuthRequired }) {
+export default function ProductCard({ product, onClick, onProductClick, onAuthRequired }) {
   const dispatch = useDispatch();
   const { isAuthenticated } = useSelector((state) => state.auth);
   const { items: wishlistItems } = useSelector((state) => state.wishlist);
   
   const isWishlisted = wishlistItems.some(item => item.id === product.id);
+
+
+  const handleProductClick = onClick || onProductClick;
 
   const handleAddToCart = () => {
     if (!isAuthenticated) {
@@ -70,7 +73,7 @@ export default function ProductCard({ product, onClick, onAuthRequired }) {
         <img
           src={product.image || "https://via.placeholder.com/300x300/e5e7eb/6b7280?text=Product"}
           alt={product.title}
-          onClick={() => onClick && onClick(product)}
+          onClick={() => handleProductClick && handleProductClick(product)}
           className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300 cursor-pointer"
         />
         
@@ -89,7 +92,7 @@ export default function ProductCard({ product, onClick, onAuthRequired }) {
         {/* Discount Badge */}
         {product.discount && (
           <div className="absolute top-3 left-3 bg-red-500 text-white text-xs px-2 py-1 rounded">
-            {product.discount} OFF
+            {product.discount}% OFF
           </div>
         )}
       </div>
@@ -98,7 +101,7 @@ export default function ProductCard({ product, onClick, onAuthRequired }) {
       <div className="p-4">
         {/* Title */}
         <h3 
-          onClick={() => onClick && onClick(product)}
+          onClick={() => handleProductClick && handleProductClick(product)}
           className="font-medium text-gray-900 text-sm mb-2 line-clamp-2 hover:text-red-600 transition-colors cursor-pointer"
         >
           {product.title}

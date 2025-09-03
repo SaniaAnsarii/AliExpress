@@ -1,10 +1,12 @@
 'use client';
 
-import { mockOrders } from '../utils/mockData';
 import { X, Package, Truck, CheckCircle, Clock, MapPin } from 'lucide-react';
 
 export default function OrdersModal({ isOpen, onClose }) {
   if (!isOpen) return null;
+
+  // Empty orders array - in a real app, this would come from MongoDB
+  const orders = [];
 
   const getStatusIcon = (status) => {
     switch (status) {
@@ -47,7 +49,7 @@ export default function OrdersModal({ isOpen, onClose }) {
         <div className="flex justify-between items-center p-6 border-b">
           <h2 className="text-xl font-bold text-gray-900 flex items-center gap-2">
             <Package size={24} className="text-blue-500" />
-            My Orders ({mockOrders.length})
+            My Orders ({orders.length})
           </h2>
           <button
             onClick={onClose}
@@ -58,7 +60,7 @@ export default function OrdersModal({ isOpen, onClose }) {
         </div>
 
         <div className="p-6 overflow-y-auto max-h-[calc(90vh-120px)]">
-          {mockOrders.length === 0 ? (
+          {orders.length === 0 ? (
             <div className="text-center py-12">
               <Package size={64} className="mx-auto text-gray-300 mb-4" />
               <h3 className="text-lg font-semibold text-gray-900 mb-2">No orders yet</h3>
@@ -72,7 +74,7 @@ export default function OrdersModal({ isOpen, onClose }) {
             </div>
           ) : (
             <div className="space-y-6">
-              {mockOrders.map((order) => (
+              {orders.map((order) => (
                 <div key={order.id} className="border border-gray-200 rounded-lg p-6">
                   {/* Order Header */}
                   <div className="flex justify-between items-start mb-4">

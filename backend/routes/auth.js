@@ -1,4 +1,3 @@
-// Authentication routes
 const express = require('express');
 const { body, validationResult } = require('express-validator');
 const User = require('../models/User');
@@ -6,7 +5,6 @@ const { generateToken, authenticateToken } = require('../config/jwt');
 
 const router = express.Router();
 
-// Register new user
 router.post('/signup', [
   body('email').isEmail().normalizeEmail(),
   body('password').isLength({ min: 6 }),
@@ -20,13 +18,11 @@ router.post('/signup', [
 
     const { email, password, displayName } = req.body;
 
-    // Check if user already exists
     const existingUser = await User.findOne({ email });
     if (existingUser) {
       return res.status(400).json({ error: 'User already exists' });
     }
 
-    // Create user (password will be hashed by pre-save middleware)
     const user = new User({
       email,
       password,
@@ -35,7 +31,6 @@ router.post('/signup', [
 
     await user.save();
 
-    // Generate JWT token
     const token = generateToken({
       id: user._id,
       email: user.email,
@@ -57,7 +52,6 @@ router.post('/signup', [
   }
 });
 
-// Login user
 router.post('/signin', [
   body('email').isEmail().normalizeEmail(),
   body('password').notEmpty()
@@ -70,19 +64,16 @@ router.post('/signin', [
 
     const { email, password } = req.body;
 
-    // Find user
     const user = await User.findOne({ email });
     if (!user) {
       return res.status(401).json({ error: 'Invalid credentials' });
     }
 
-    // Verify password
     const isValidPassword = await user.comparePassword(password);
     if (!isValidPassword) {
       return res.status(401).json({ error: 'Invalid credentials' });
     }
 
-    // Generate JWT token
     const token = generateToken({
       id: user._id,
       email: user.email,
@@ -104,7 +95,6 @@ router.post('/signin', [
   }
 });
 
-// Get current user profile
 router.get('/profile', authenticateToken, async (req, res) => {
   try {
     const user = await User.findById(req.user.id);
@@ -125,7 +115,6 @@ router.get('/profile', authenticateToken, async (req, res) => {
   }
 });
 
-// Update user profile
 router.put('/profile', authenticateToken, [
   body('displayName').optional().isLength({ min: 2 }),
   body('photoURL').optional().isURL()
@@ -174,7 +163,6 @@ router.put('/profile', authenticateToken, [
   }
 });
 
-// Logout (client-side token removal)
 router.post('/signout', (req, res) => {
   res.json({ message: 'Logged out successfully' });
 });

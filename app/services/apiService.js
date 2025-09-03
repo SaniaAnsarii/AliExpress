@@ -1,204 +1,164 @@
 import axios from 'axios';
-import { mockProducts, categories, filterProducts, getCategoryIcon } from '../utils/mockData';
 
-const API_KEYS = [
-  '6fd8e09abfmsh37c08bb90bd4f6ep1ba638jsn1475824bdd57',
-];
-
-const API_ENDPOINTS = {
-  rapidapi: {
-    host: 'ali-express1.p.rapidapi.com',
-    search: 'https://ali-express1.p.rapidapi.com/search',
-    categories: 'https://ali-express1.p.rapidapi.com/categories',
-    productsByCategory: 'https://ali-express1.p.rapidapi.com/productsByCategoryV2'
-  },
-
-  fakestore: {
-    host: 'fakestoreapi.com',
-    search: 'https://fakestoreapi.com/products',
-    categories: 'https://fakestoreapi.com/products/categories'
+// MongoDB Backend API configuration
+const BACKEND_API_CONFIG = {
+  baseURL: 'http://localhost:5000', // Your backend server URL
+  endpoints: {
+    products: '/api/products',
+    categories: '/api/products/categories/all',
+    productDetails: '/api/products',
+    search: '/api/products/search'
   }
 };
 
-
-
-const tryMultipleAPIKeys = async (endpoint, params = {}) => {
-  for (let i = 0; i < API_KEYS.length; i++) {
-    try {
-      console.log(`Trying API key ${i + 1}/${API_KEYS.length}...`);
-      
-      const response = await axios.get(endpoint, {
-        params,
-        headers: {
-          'X-RapidAPI-Key': API_KEYS[i],
-          'X-RapidAPI-Host': API_ENDPOINTS.rapidapi.host
-        },
-        timeout: 10000
-      });
-      
-      if (response.status === 200 && response.data) {
-        console.log(`API key ${i + 1} worked!`);
-        return response.data;
-      }
-    } catch (error) {
-      console.log(`API key ${i + 1} failed:`, error.response?.status || error.message);
-      
-      if (error.response?.status !== 429) {
-        break;
-      }
-    }
-    
-    if (i < API_KEYS.length - 1) {
-      await new Promise(resolve => setTimeout(resolve, 1000));
-    }
-  }
-  
-  throw new Error('All API keys failed');
-};
-
-export const searchProducts = async (query = 'phone', category = '') => {
+// Helper function to make API requests with error handling
+const makeAPIRequest = async (url, options = {}) => {
   try {
-    console.log('Searching products...', { query, category });
+    // Add cache-busting parameter
+    const cacheBuster = `?cb=${Date.now()}`;
+    const finalUrl = url.includes('?') ? `${url}&cb=${Date.now()}` : `${url}${cacheBuster}`;
     
-    try {
-      const searchParams = {
-        query: query || 'phone',
-        page: '1',
-        limit: '20'
-      };
-      
-      const data = await tryMultipleAPIKeys(API_ENDPOINTS.rapidapi.search, searchParams);
-      
-      if (data?.data && data.data.length > 0) {
-        console.log('Got RapidAPI data!');
-        return { data: data.data, source: 'rapidapi' };
-      }
-    } catch (rapidError) {
-      console.log('RapidAPI failed, trying FakeStore...');
+    const response = await axios.get(finalUrl, {
+      timeout: 10000,
+      headers: {
+        'Cache-Control': 'no-cache',
+        'Pragma': 'no-cache'
+      },
+      ...options
+    });
+    return response.data;
+  } catch (error) {
+    console.log(`API request failed for ${url}:`, error.message);
+    throw error;
+  }
+};
+
+// Product details from MongoDB backend
+export const getProductDetails = async (productId) => {
+  try {
+    console.log(`📱 Fetching product details from MongoDB backend...`);
+    const url = `${BACKEND_API_CONFIG.baseURL}${BACKEND_API_CONFIG.endpoints.productDetails}/${productId}`;
+    const data = await makeAPIRequest(url);
+    
+    if (data && data.product) {
+      console.log(`✅ Got product details from MongoDB!`);
+      return { data: data.product, source: 'mongodb' };
     }
     
-    try {
-      console.log('Trying FakeStore API...');
-      let url = API_ENDPOINTS.fakestore.search;
-      
-      if (category && category !== 'all') {
-        const categoryMap = {
-          'electronics': 'electronics',
-          'jewelery': 'jewelery',
-          'mens-clothing': "men's clothing",
-          'womens-clothing': "women's clothing"
-        };
-        
-        const mappedCategory = categoryMap[category] || category;
-        url = `https://fakestoreapi.com/products/category/${encodeURIComponent(mappedCategory)}`;
-        console.log('Using category-specific URL:', url);
-      }
-      
-      const response = await axios.get(url);
-      
-      if (response.data && response.data.length > 0) {
-        console.log('Got FakeStore API data!');
-        console.log('FakeStore response data length:', response.data.length);
-        const transformedData = response.data.slice(0, 20).map((item, index) => ({
-          id: item.id,
-          title: item.title,
-          price: item.price.toString(),
-          originalPrice: (item.price * 1.2).toFixed(2),
-          image: item.image,
-          rating: item.rating?.rate || 4.5,
-          reviews: item.rating?.count || 100,
-          discount: "20% OFF",
-          shipping: "Free shipping",
-          category: item.category,
-          description: item.description
-        }));
-        console.log('Transformed data length:', transformedData.length);
-        console.log('Returning FakeStore data with source: fakestore');
-        return { data: transformedData, source: 'fakestore' };
-      }
-    } catch (fakestoreError) {
-      console.log('FakeStore API failed:', fakestoreError.message);
+    throw new Error('Product not found in database');
+  } catch (error) {
+    console.log('❌ MongoDB product details failed:', error.message);
+    throw new Error('Product not found');
+  }
+};
+
+// Product feedback from MongoDB backend
+export const getProductFeedback = async (productId) => {
+  try {
+    console.log('💬 Fetching product feedback from MongoDB...');
+    // You can implement feedback API endpoint in your backend
+    // For now, returning empty array
+    return { data: [], source: 'mongodb' };
+  } catch (error) {
+    console.log('❌ MongoDB feedback failed:', error.message);
+    return { data: [], source: 'mongodb' };
+  }
+};
+
+// Shipping info from MongoDB backend
+export const getShippingInfo = async (productId) => {
+  try {
+    console.log('🚚 Fetching shipping info from MongoDB...');
+    // You can implement shipping API endpoint in your backend
+    // For now, returning default shipping info
+    const defaultShipping = {
+      shipping: 'Free shipping',
+      delivery: '7-14 days',
+      tracking: 'Available',
+      returns: '30-day return policy'
+    };
+    
+    return { data: defaultShipping, source: 'mongodb' };
+  } catch (error) {
+    console.log('❌ MongoDB shipping failed:', error.message);
+    return { data: { shipping: 'Free shipping', delivery: '7-14 days' }, source: 'mongodb' };
+  }
+};
+
+// Search products from MongoDB backend
+export const searchProducts = async (query = '', category = '') => {
+  try {
+    console.log('🔍 searchProducts called with:', { query, category });
+    
+    let url = `${BACKEND_API_CONFIG.baseURL}${BACKEND_API_CONFIG.endpoints.products}`;
+    
+    // Add query parameters if provided
+    const params = new URLSearchParams();
+    if (query) params.append('q', query);
+    if (category && category !== 'all') params.append('category', category);
+    
+    if (params.toString()) {
+      url += `?${params.toString()}`;
     }
     
-    console.log('All APIs failed, using mock data');
-    const filteredMockData = filterProducts(mockProducts, query, category);
-    console.log(`Filtered mock data for category: ${category}, found ${filteredMockData.length} products`);
+    console.log(`🚀 Fetching from MongoDB backend: ${url}`);
+    const data = await makeAPIRequest(url);
     
-    console.log('Returning mock data with source: mock');
-    return { data: filteredMockData, source: 'mock' };
+    if (data && data.products && data.products.length > 0) {
+      console.log(`✅ Got ${data.products.length} products from MongoDB!`);
+      return { data: data.products, source: 'mongodb' };
+    } else {
+      console.log('📭 No products found in MongoDB');
+      return { data: [], source: 'mongodb' };
+    }
     
   } catch (error) {
-    console.log('All API attempts failed, using mock data');
-    return { data: mockProducts, source: 'mock' };
+    console.log('❌ MongoDB search failed:', error.message);
+    throw new Error('Failed to fetch products from database');
   }
 };
 
+// Get categories from MongoDB backend
 export const getCategories = async () => {
   try {
-    console.log('Getting categories...');
+    console.log('📂 Getting categories from MongoDB...');
+    const url = `${BACKEND_API_CONFIG.baseURL}${BACKEND_API_CONFIG.endpoints.categories}`;
+    const data = await makeAPIRequest(url);
     
-    try {
-      const data = await tryMultipleAPIKeys(API_ENDPOINTS.rapidapi.categories);
-      
-      if (data?.data && data.data.length > 0) {
-        console.log('Got RapidAPI categories!');
-        return { data: data.data, source: 'rapidapi' };
-      }
-    } catch (rapidError) {
-      console.log('RapidAPI categories failed, trying FakeStore...');
+    if (data && data.categories && data.categories.length > 0) {
+      console.log(`✅ Got ${data.categories.length} categories from MongoDB!`);
+      return { data: data.categories, source: 'mongodb' };
+    } else {
+      console.log('📭 No categories found in MongoDB');
+      return { data: [], source: 'mongodb' };
     }
-    
-    try {
-      console.log('Trying FakeStore categories...');
-      const response = await axios.get(API_ENDPOINTS.fakestore.categories);
-      
-      if (response.data && response.data.length > 0) {
-        console.log('Got FakeStore categories!');
-        const transformedCategories = response.data.map(category => ({
-          id: category.toLowerCase().replace(/\s+/g, '-'),
-          name: category.charAt(0).toUpperCase() + category.slice(1),
-          icon: getCategoryIcon(category)
-        }));
-        return { data: transformedCategories, source: 'fakestore' };
-      }
-    } catch (fakestoreError) {
-      console.log('FakeStore categories failed:', fakestoreError.message);
-    }
-    
-    console.log('All category APIs failed, using defaults');
-    return { 
-      data: categories, 
-      source: 'mock' 
-    };
     
   } catch (error) {
-    console.log('Categories API failed, using defaults');
-    return { 
-      data: categories, 
-      source: 'mock' 
-    };
+    console.log('❌ MongoDB categories failed:', error.message);
+    throw new Error('Failed to fetch categories from database');
   }
 };
 
-
-
+// Test API status
 export const testAPIStatus = async () => {
-  console.log('Testing API status...');
+  console.log('🧪 Testing MongoDB API status...');
   
   try {
-    const searchResult = await searchProducts('phone');
+    const searchResult = await searchProducts('', 'all');
     const categoriesResult = await getCategories();
     
     return {
       search: searchResult,
       categories: categoriesResult,
-      status: 'success'
+      status: 'success',
+      source: 'mongodb'
     };
   } catch (error) {
-    console.error('API test failed:', error);
+    console.error('❌ MongoDB API test failed:', error);
     return {
       status: 'error',
-      error: error.message
+      error: error.message,
+      source: 'mongodb'
     };
   }
 };

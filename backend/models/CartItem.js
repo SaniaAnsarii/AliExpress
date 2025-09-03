@@ -7,7 +7,7 @@ const cartItemSchema = new mongoose.Schema({
     required: true
   },
   productId: {
-    type: String, // External product ID from RapidAPI
+    type: String, // External product ID from API
     required: true
   },
   productData: {

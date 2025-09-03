@@ -8,7 +8,7 @@ const wishlistSchema = new mongoose.Schema({
     index: true
   },
   productId: {
-    type: String, // External product ID from RapidAPI
+    type: String, // External product ID from API
     required: true
   },
   productData: {

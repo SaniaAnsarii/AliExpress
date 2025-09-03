@@ -1,4 +1,3 @@
-// Cart routes
 const express = require('express');
 const { body, validationResult } = require('express-validator');
 const CartItem = require('../models/CartItem');
@@ -6,7 +5,6 @@ const { authenticateToken } = require('../config/jwt');
 
 const router = express.Router();
 
-// Get user's cart
 router.get('/', authenticateToken, async (req, res) => {
   try {
     const cartItems = await CartItem.find({ userId: req.user.id })
@@ -37,7 +35,6 @@ router.get('/', authenticateToken, async (req, res) => {
   }
 });
 
-// Add item to cart
 router.post('/add', authenticateToken, [
   body('productId').notEmpty(),
   body('quantity').isInt({ min: 1 }),
@@ -51,19 +48,16 @@ router.post('/add', authenticateToken, [
 
     const { productId, quantity, productData } = req.body;
 
-    // Check if item already exists in cart
     const existingItem = await CartItem.findOne({ 
       userId: req.user.id, 
       productId: productId 
     });
 
     if (existingItem) {
-      // Update existing item quantity
       const newQuantity = existingItem.quantity + quantity;
       existingItem.quantity = newQuantity;
       await existingItem.save();
     } else {
-      // Add new item to cart
       const cartItem = new CartItem({
         userId: req.user.id,
         productId: productId,
@@ -80,7 +74,6 @@ router.post('/add', authenticateToken, [
   }
 });
 
-// Update cart item quantity
 router.put('/update/:itemId', authenticateToken, [
   body('quantity').isInt({ min: 1 })
 ], async (req, res) => {
@@ -93,7 +86,6 @@ router.put('/update/:itemId', authenticateToken, [
     const { itemId } = req.params;
     const { quantity } = req.body;
 
-    // Check if cart item exists and belongs to user
     const cartItem = await CartItem.findOne({ 
       _id: itemId, 
       userId: req.user.id 
@@ -103,7 +95,6 @@ router.put('/update/:itemId', authenticateToken, [
       return res.status(404).json({ error: 'Cart item not found' });
     }
 
-    // Update quantity
     cartItem.quantity = quantity;
     await cartItem.save();
 
@@ -114,7 +105,6 @@ router.put('/update/:itemId', authenticateToken, [
   }
 });
 
-// Remove item from cart
 router.delete('/remove/:itemId', authenticateToken, async (req, res) => {
   try {
     const { itemId } = req.params;
@@ -135,7 +125,6 @@ router.delete('/remove/:itemId', authenticateToken, async (req, res) => {
   }
 });
 
-// Clear entire cart
 router.delete('/clear', authenticateToken, async (req, res) => {
   try {
     await CartItem.deleteMany({ userId: req.user.id });
