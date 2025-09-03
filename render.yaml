@@ -1,0 +1,34 @@
+services:
+  # Frontend (Next.js)
+  - type: web
+    name: aliexpress-frontend
+    env: node
+    buildCommand: npm install && npm run build
+    startCommand: npm start
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: NEXT_PUBLIC_API_URL
+        value: https://aliexpress-backend.onrender.com
+    routes:
+      - type: rewrite
+        source: /api/*
+        destination: https://aliexpress-backend.onrender.com/api/*
+
+  # Backend (Express.js)
+  - type: web
+    name: aliexpress-backend
+    env: node
+    buildCommand: cd backend && npm install
+    startCommand: cd backend && npm start
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: MONGODB_URI
+        sync: false
+      - key: JWT_SECRET
+        sync: false
+      - key: JWT_EXPIRES_IN
+        value: 7d
+      - key: CORS_ORIGIN
+        value: https://aliexpress-frontend.onrender.com

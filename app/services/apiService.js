@@ -1,8 +1,9 @@
 import axios from 'axios';
+import { config } from '../config/environment';
 
 // MongoDB Backend API configuration
 const BACKEND_API_CONFIG = {
-  baseURL: 'http://localhost:5000', // Your backend server URL
+  baseURL: config.apiUrl, // Use environment-aware configuration
   endpoints: {
     products: '/api/products',
     categories: '/api/products/categories/all',
