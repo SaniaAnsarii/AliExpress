@@ -221,44 +221,6 @@ const HARDCODED_PRODUCTS = {
     }
   }
 };
-    originalPrice: 49.99,
-    discount: 20,
-    image: 'https://images.unsplash.com/photo-1481627834876-b7833e8f5570?w=500',
-    category: 'books',
-    brand: 'TechBooks',
-    stock: 30,
-    rating: 4.7,
-    reviews: 156,
-    shipping: 'Free Shipping',
-    tags: ['programming', 'web-development', 'guide', 'practical'],
-    specifications: {
-      pages: 450,
-      format: 'Paperback',
-      language: 'English'
-    }
-  },
-  '68b8881593ab3e84425f5cc0': {
-    id: '68b8881593ab3e84425f5cc0',
-    title: 'Board Game Set',
-    description: 'Classic board game collection for family entertainment',
-    price: 34.99,
-    originalPrice: 44.99,
-    discount: 22,
-    image: 'https://images.unsplash.com/photo-1606092195730-5d7b9af1efc5?w=500',
-    category: 'toys-games',
-    brand: 'GameMaster',
-    stock: 40,
-    rating: 4.5,
-    reviews: 89,
-    shipping: 'Free Shipping',
-    tags: ['board-game', 'family', 'entertainment', 'classic'],
-    specifications: {
-      players: '2-6',
-      age: '8+',
-      duration: '30-60 minutes'
-    }
-  }
-};
 
 export default function ProductDetailPage() {
   const params = useParams();
