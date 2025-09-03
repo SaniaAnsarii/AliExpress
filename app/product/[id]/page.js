@@ -8,10 +8,10 @@ import { toggleWishlist, toggleWishlistAPI } from '../../features/wishlist/wishl
 import { Star, ShoppingCart, Heart, ArrowLeft } from 'lucide-react';
 import Link from 'next/link';
 
-// Hardcoded product data from MongoDB Atlas
+// Hardcoded product data from MongoDB Atlas - Updated to match actual IDs
 const HARDCODED_PRODUCTS = {
-  '68b8881593ab3e84425f5cb7': {
-    id: '68b8881593ab3e84425f5cb7',
+  '68b8983c4f5014ad41a018a6': {
+    id: '68b8983c4f5014ad41a018a6',
     title: 'Wireless Bluetooth Headphones',
     description: 'High-quality wireless headphones with noise cancellation and premium sound quality',
     price: 99.99,
@@ -31,8 +31,8 @@ const HARDCODED_PRODUCTS = {
       weight: '250g'
     }
   },
-  '68b8881593ab3e84425f5cb8': {
-    id: '68b8881593ab3e84425f5cb8',
+  '68b8983c4f5014ad41a018a7': {
+    id: '68b8983c4f5014ad41a018a7',
     title: 'Smartphone Case',
     description: 'Protective case for latest smartphone models with shock absorption',
     price: 24.99,
@@ -52,8 +52,8 @@ const HARDCODED_PRODUCTS = {
       protection: 'Military Grade'
     }
   },
-  '68b8881593ab3e84425f5cb9': {
-    id: '68b8881593ab3e84425f5cb9',
+  '68b8983c4f5014ad41a018a8': {
+    id: '68b8983c4f5014ad41a018a8',
     title: 'Cotton T-Shirt',
     description: 'Comfortable cotton t-shirt in various colors, perfect for everyday wear',
     price: 19.99,
@@ -73,8 +73,8 @@ const HARDCODED_PRODUCTS = {
       care: 'Machine Washable'
     }
   },
-  '68b8881593ab3e84425f5cba': {
-    id: '68b8881593ab3e84425f5cba',
+  '68b8983c4f5014ad41a018a9': {
+    id: '68b8983c4f5014ad41a018a9',
     title: 'Garden Tools Set',
     description: 'Complete set of gardening tools for all your gardening needs',
     price: 49.99,
@@ -94,8 +94,8 @@ const HARDCODED_PRODUCTS = {
       handle: 'Ergonomic Grip'
     }
   },
-  '68b8881593ab3e84425f5cbb': {
-    id: '68b8881593ab3e84425f5cbb',
+  '68b8983c4f5014ad41a018aa': {
+    id: '68b8983c4f5014ad41a018aa',
     title: 'Running Shoes',
     description: 'Comfortable running shoes for all terrains with advanced cushioning',
     price: 89.99,
@@ -115,8 +115,8 @@ const HARDCODED_PRODUCTS = {
       weight: '280g per shoe'
     }
   },
-  '68b8881593ab3e84425f5cbc': {
-    id: '68b8881593ab3e84425f5cbc',
+  '68b8983c4f5014ad41a018ab': {
+    id: '68b8983c4f5014ad41a018ab',
     title: 'Yoga Mat',
     description: 'Non-slip yoga mat with carrying strap',
     price: 24.99,
@@ -136,8 +136,8 @@ const HARDCODED_PRODUCTS = {
       size: '183 x 61 cm'
     }
   },
-  '68b8881593ab3e84425f5cbd': {
-    id: '68b8881593ab3e84425f5cbd',
+  '68b8983c4f5014ad41a018ac': {
+    id: '68b8983c4f5014ad41a018ac',
     title: 'Dumbbell Set',
     description: 'Adjustable dumbbell set for home workouts',
     price: 149.99,
@@ -157,8 +157,8 @@ const HARDCODED_PRODUCTS = {
       adjustment: 'Quick change'
     }
   },
-  '68b8881593ab3e84425f5cbe': {
-    id: '68b8881593ab3e84425f5cbe',
+  '68b8983c4f5014ad41a018ad': {
+    id: '68b8983c4f5014ad41a018ad',
     title: 'Skiing Equipment',
     description: 'Professional skiing gear for winter sports',
     price: 79.99,
@@ -178,11 +178,49 @@ const HARDCODED_PRODUCTS = {
       season: 'Winter'
     }
   },
-  '68b8881593ab3e84425f5cbf': {
-    id: '68b8881593ab3e84425f5cbf',
+  '68b8983c4f5014ad41a018ae': {
+    id: '68b8983c4f5014ad41a018ae',
     title: 'Programming Book',
     description: 'Comprehensive guide to modern web development with practical examples',
     price: 39.99,
+    originalPrice: 49.99,
+    discount: 20,
+    image: 'https://images.unsplash.com/photo-1481627834876-b7833e8f5570?w=500',
+    category: 'books',
+    brand: 'TechBooks',
+    stock: 30,
+    rating: 4.7,
+    reviews: 156,
+    shipping: 'Free Shipping',
+    tags: ['programming', 'web-development', 'guide', 'practical'],
+    specifications: {
+      pages: 450,
+      format: 'Paperback',
+      language: 'English'
+    }
+  },
+  '68b8983c4f5014ad41a018af': {
+    id: '68b8983c4f5014ad41a018af',
+    title: 'Board Game Set',
+    description: 'Classic board game collection for family entertainment',
+    price: 34.99,
+    originalPrice: 44.99,
+    discount: 22,
+    image: 'https://images.unsplash.com/photo-1606092195730-5d7b9af1efc5?w=500',
+    category: 'toys-games',
+    brand: 'GameMaster',
+    stock: 40,
+    rating: 4.5,
+    reviews: 89,
+    shipping: 'Free Shipping',
+    tags: ['board-game', 'family', 'entertainment', 'classic'],
+    specifications: {
+      players: '2-6',
+      age: '8+',
+      duration: '30-60 minutes'
+    }
+  }
+};
     originalPrice: 49.99,
     discount: 20,
     image: 'https://images.unsplash.com/photo-1481627834876-b7833e8f5570?w=500',
