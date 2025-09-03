@@ -18,7 +18,7 @@ export const fetchCart = createAsyncThunk(
         throw new Error('No authentication token');
       }
 
-      const response = await fetch('http://localhost:5000/api/cart', {
+      const response = await fetch('https://aliexpress-1.onrender.com/api/cart', {
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'
@@ -45,7 +45,7 @@ export const addToCartAPI = createAsyncThunk(
         throw new Error('No authentication token');
       }
 
-      const response = await fetch('http://localhost:5000/api/cart/add', {
+      const response = await fetch('https://aliexpress-1.onrender.com/api/cart/add', {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -75,7 +75,7 @@ export const updateCartItemAPI = createAsyncThunk(
         throw new Error('No authentication token');
       }
 
-      const response = await fetch(`http://localhost:5000/api/cart/update/${itemId}`, {
+      const response = await fetch(`https://aliexpress-1.onrender.com/api/cart/update/${itemId}`, {
         method: 'PUT',
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -105,7 +105,7 @@ export const removeFromCartAPI = createAsyncThunk(
         throw new Error('No authentication token');
       }
 
-      const response = await fetch(`http://localhost:5000/api/cart/remove/${itemId}`, {
+      const response = await fetch(`https://aliexpress-1.onrender.com/api/cart/remove/${itemId}`, {
         method: 'DELETE',
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -134,7 +134,7 @@ export const clearCartAPI = createAsyncThunk(
         throw new Error('No authentication token');
       }
 
-      const response = await fetch('http://localhost:5000/api/cart/clear', {
+      const response = await fetch('https://aliexpress-1.onrender.com/api/cart/clear', {
         method: 'DELETE',
         headers: {
           'Authorization': `Bearer ${token}`,

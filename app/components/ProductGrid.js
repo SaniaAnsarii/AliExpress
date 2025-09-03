@@ -34,7 +34,7 @@ export default function ProductGrid({ activeCategory }) {
 
   const testAPICall = async () => {
     try {
-      const response = await fetch('http://localhost:5000/api/products/categories/all');
+              const response = await fetch('https://aliexpress-1.onrender.com/api/products/categories/all');
       const data = await response.json();
       setTestResults(data);
       console.log('API test results:', data);

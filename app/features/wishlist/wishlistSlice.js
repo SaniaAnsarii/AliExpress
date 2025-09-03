@@ -16,7 +16,7 @@ export const fetchWishlist = createAsyncThunk(
         throw new Error('No authentication token');
       }
 
-      const response = await fetch('http://localhost:5000/api/wishlist', {
+      const response = await fetch('https://aliexpress-1.onrender.com/api/wishlist', {
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'
@@ -43,7 +43,7 @@ export const addToWishlistAPI = createAsyncThunk(
         throw new Error('No authentication token');
       }
 
-      const response = await fetch('http://localhost:5000/api/wishlist/add', {
+      const response = await fetch('https://aliexpress-1.onrender.com/api/wishlist/add', {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -73,7 +73,7 @@ export const removeFromWishlistAPI = createAsyncThunk(
         throw new Error('No authentication token');
       }
 
-      const response = await fetch(`http://localhost:5000/api/wishlist/remove/${productId}`, {
+      const response = await fetch(`https://aliexpress-1.onrender.com/api/wishlist/remove/${productId}`, {
         method: 'DELETE',
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -102,7 +102,7 @@ export const toggleWishlistAPI = createAsyncThunk(
         throw new Error('No authentication token');
       }
 
-      const response = await fetch('http://localhost:5000/api/wishlist/toggle', {
+      const response = await fetch('https://aliexpress-1.onrender.com/api/wishlist/toggle', {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -132,7 +132,7 @@ export const clearWishlistAPI = createAsyncThunk(
         throw new Error('No authentication token');
       }
 
-      const response = await fetch('http://localhost:5000/api/wishlist/clear', {
+      const response = await fetch('https://aliexpress-1.onrender.com/api/wishlist/clear', {
         method: 'DELETE',
         headers: {
           'Authorization': `Bearer ${token}`,
