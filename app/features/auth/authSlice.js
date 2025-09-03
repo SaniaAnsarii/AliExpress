@@ -7,7 +7,7 @@ export const signUp = createAsyncThunk(
   async ({ email, password, displayName }, { rejectWithValue }) => {
     try {
       // Backend API call
-      const response = await fetch('http://localhost:5000/api/auth/signup', {
+      const response = await fetch('https://aliexpress-1.onrender.com/api/auth/signup', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -38,7 +38,7 @@ export const signIn = createAsyncThunk(
   async ({ email, password }, { rejectWithValue }) => {
     try {
       // Backend API call
-      const response = await fetch('http://localhost:5000/api/auth/signin', {
+      const response = await fetch('https://aliexpress-1.onrender.com/api/auth/signin', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -72,7 +72,7 @@ export const signOutUser = createAsyncThunk(
       const token = localStorage.getItem('authToken');
       
       // Backend API call
-      await fetch('http://localhost:5000/api/auth/signout', {
+      await fetch('https://aliexpress-1.onrender.com/api/auth/signout', {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -95,7 +95,7 @@ export const updateUserProfile = createAsyncThunk(
       const token = localStorage.getItem('authToken');
       
       // Backend API call
-      const response = await fetch('http://localhost:5000/api/auth/profile', {
+      const response = await fetch('https://aliexpress-1.onrender.com/api/auth/profile', {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
