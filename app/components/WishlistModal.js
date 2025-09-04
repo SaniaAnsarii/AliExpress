@@ -1,21 +1,25 @@
 'use client';
 
 import { useSelector, useDispatch } from 'react-redux';
-import { removeFromWishlist } from '../features/wishlist/wishlistSlice';
+import { removeFromWishlistAPI, fetchWishlist } from '../features/wishlist/wishlistSlice';
 import { X, Heart, ShoppingCart, Trash2 } from 'lucide-react';
 
 export default function WishlistModal({ isOpen, onClose }) {
   const dispatch = useDispatch();
-  const { items: wishlistItems } = useSelector((state) => state.wishlist);
-  const { products } = useSelector((state) => state.products);
+  const { items: wishlistItems, loading } = useSelector((state) => state.wishlist);
 
-  // Get wishlisted products from the same data source as ProductGrid
-  const wishlistedProducts = products.filter(product => 
-    wishlistItems.includes(product.id)
-  );
+  // Debug logging
+  console.log('WishlistModal - wishlistItems:', wishlistItems);
+  console.log('WishlistModal - loading:', loading);
 
-  const handleRemoveFromWishlist = (productId) => {
-    dispatch(removeFromWishlist(productId));
+  const handleRemoveFromWishlist = async (productId) => {
+    try {
+      await dispatch(removeFromWishlistAPI(productId)).unwrap();
+      // Refresh wishlist after removal
+      dispatch(fetchWishlist());
+    } catch (error) {
+      console.error('Failed to remove from wishlist:', error);
+    }
   };
 
   const handleAddToCart = (product) => {
@@ -31,7 +35,7 @@ export default function WishlistModal({ isOpen, onClose }) {
         <div className="flex justify-between items-center p-6 border-b">
           <h2 className="text-xl font-bold text-gray-900 flex items-center gap-2">
             <Heart size={24} className="text-red-500" />
-            My Wishlist ({wishlistedProducts.length})
+            My Wishlist ({wishlistItems.length})
           </h2>
           <button
             onClick={onClose}
@@ -42,7 +46,12 @@ export default function WishlistModal({ isOpen, onClose }) {
         </div>
 
         <div className="p-6 overflow-y-auto max-h-[calc(90vh-120px)]">
-          {wishlistedProducts.length === 0 ? (
+          {loading ? (
+            <div className="text-center py-12">
+              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-red-600 mx-auto"></div>
+              <p className="mt-4 text-gray-600">Loading wishlist...</p>
+            </div>
+          ) : wishlistItems.length === 0 ? (
             <div className="text-center py-12">
               <Heart size={64} className="mx-auto text-gray-300 mb-4" />
               <h3 className="text-lg font-semibold text-gray-900 mb-2">Your wishlist is empty</h3>
@@ -56,16 +65,19 @@ export default function WishlistModal({ isOpen, onClose }) {
             </div>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {wishlistedProducts.map((product) => (
-                <div key={product.id} className="border border-gray-200 rounded-lg overflow-hidden hover:shadow-lg transition-shadow">
+              {wishlistItems.map((item) => (
+                <div key={item.id} className="border border-gray-200 rounded-lg overflow-hidden hover:shadow-lg transition-shadow">
                   <div className="relative">
                     <img
-                      src={product.image}
-                      alt={product.title}
+                      src={item.imageUrl || item.image || "https://via.placeholder.com/300x300/e5e7eb/6b7280?text=Product"}
+                      alt={item.title}
                       className="w-full h-48 object-cover"
+                      onError={(e) => {
+                        e.target.src = "https://via.placeholder.com/300x300/e5e7eb/6b7280?text=Product";
+                      }}
                     />
                     <button
-                      onClick={() => handleRemoveFromWishlist(product.id)}
+                      onClick={() => handleRemoveFromWishlist(item.productId)}
                       className="absolute top-2 right-2 p-2 bg-white rounded-full shadow-md hover:bg-red-50 transition-colors"
                       title="Remove from wishlist"
                     >
@@ -75,48 +87,30 @@ export default function WishlistModal({ isOpen, onClose }) {
                   
                   <div className="p-4">
                     <h3 className="font-semibold text-gray-900 mb-2 line-clamp-2">
-                      {product.title}
+                      {item.title}
                     </h3>
                     
                     <div className="flex items-center gap-2 mb-3">
                       <span className="text-lg font-bold text-red-600">
-                        ${product.price}
+                        ${item.price}
                       </span>
-                      {product.originalPrice && (
-                        <span className="text-sm text-gray-500 line-through">
-                          ${product.originalPrice}
-                        </span>
-                      )}
-                      {product.discount && (
-                        <span className="text-xs bg-red-100 text-red-600 px-2 py-1 rounded">
-                          -{product.discount}%
-                        </span>
-                      )}
                     </div>
 
                     <div className="flex items-center gap-2 mb-3">
-                      <div className="flex items-center">
-                        {[...Array(5)].map((_, i) => (
-                          <span
-                            key={i}
-                            className={`text-sm ${
-                              i < Math.floor(product.rating)
-                                ? 'text-yellow-400'
-                                : 'text-gray-300'
-                            }`}
-                          >
-                            ★
-                          </span>
-                        ))}
-                      </div>
                       <span className="text-sm text-gray-500">
-                        ({product.reviews} reviews)
+                        Category: {item.category}
+                      </span>
+                    </div>
+
+                    <div className="flex items-center gap-2 mb-3">
+                      <span className="text-sm text-gray-500">
+                        Stock: {item.stockQuantity}
                       </span>
                     </div>
 
                     <div className="flex gap-2">
                       <button
-                        onClick={() => handleAddToCart(product)}
+                        onClick={() => handleAddToCart(item)}
                         className="flex-1 flex items-center justify-center gap-2 px-3 py-2 bg-red-600 text-white text-sm rounded-lg hover:bg-red-700 transition-colors"
                       >
                         <ShoppingCart size={16} />

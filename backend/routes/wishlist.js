@@ -17,7 +17,7 @@ router.get('/', authenticateToken, async (req, res) => {
       productId: item.productId,
       title: item.productData.title,
       price: item.productData.price,
-      imageUrl: item.productData.imageUrl,
+      imageUrl: item.productData.imageUrl || item.productData.image,
       stockQuantity: item.productData.stockQuantity,
       category: item.productData.category,
       addedAt: item.addedAt

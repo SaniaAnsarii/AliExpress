@@ -31,6 +31,14 @@ function AuthListener({ children }) {
     }
   }, [isAuthenticated, dispatch]);
 
+  // Also fetch wishlist when component mounts if user is already authenticated
+  useEffect(() => {
+    const token = localStorage.getItem('authToken');
+    if (token && isAuthenticated) {
+      dispatch(fetchWishlist());
+    }
+  }, [dispatch, isAuthenticated]);
+
   useEffect(() => {
     const removeDevIndicator = () => {
       const indicator = document.getElementById('devtools-indicator');

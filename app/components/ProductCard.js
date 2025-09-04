@@ -3,14 +3,19 @@
 import { useDispatch, useSelector } from 'react-redux';
 import { ShoppingCart, Heart, Star } from 'lucide-react';
 import { addToCart, addToCartAPI } from '../features/cart/cartSlice';
-import { toggleWishlist, toggleWishlistAPI } from '../features/wishlist/wishlistSlice';
+import { toggleWishlist, toggleWishlistAPI, fetchWishlist } from '../features/wishlist/wishlistSlice';
 
 export default function ProductCard({ product, onClick, onProductClick, onAuthRequired }) {
   const dispatch = useDispatch();
   const { isAuthenticated } = useSelector((state) => state.auth);
   const { items: wishlistItems } = useSelector((state) => state.wishlist);
   
-  const isWishlisted = wishlistItems.some(item => item.id === product.id);
+  const isWishlisted = wishlistItems.some(item => item.productId === product.id);
+
+  // Debug logging
+  console.log('ProductCard - product.id:', product.id);
+  console.log('ProductCard - wishlistItems:', wishlistItems);
+  console.log('ProductCard - isWishlisted:', isWishlisted);
 
 
   const handleProductClick = onClick || onProductClick;
@@ -44,26 +49,30 @@ export default function ProductCard({ product, onClick, onProductClick, onAuthRe
     }));
   };
 
-  const handleWishlist = () => {
+  const handleWishlist = async () => {
     if (!isAuthenticated) {
       onAuthRequired && onAuthRequired();
       return;
     }
     
-    // Use API call for database persistence
-    dispatch(toggleWishlistAPI({
-      productId: product.id,
-      productData: {
-        title: product.title,
-        price: product.price,
-        imageUrl: product.image,
-        category: product.category || 'General',
-        stockQuantity: product.stockQuantity || 100
-      }
-    }));
-    
-    // Also update local state for immediate UI feedback
-    dispatch(toggleWishlist(product.id));
+    try {
+      // Use API call for database persistence
+      await dispatch(toggleWishlistAPI({
+        productId: product.id,
+        productData: {
+          title: product.title,
+          price: product.price,
+          imageUrl: product.image,
+          category: product.category || 'General',
+          stockQuantity: product.stockQuantity || 100
+        }
+      })).unwrap();
+      
+      // Refresh wishlist from backend to ensure UI is in sync
+      dispatch(fetchWishlist());
+    } catch (error) {
+      console.error('Failed to toggle wishlist:', error);
+    }
   };
 
   return (

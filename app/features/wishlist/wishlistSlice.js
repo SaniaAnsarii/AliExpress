@@ -1,7 +1,7 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 
 const initialState = {
-  items: [], 
+  items: [], // Will store full wishlist items from backend
   isOpen: false, 
   loading: false,
   error: null
@@ -156,24 +156,46 @@ const wishlistSlice = createSlice({
   name: 'wishlist',
   initialState,
   reducers: {
-    // Keep local actions for immediate UI updates
+    // Local actions for immediate UI updates
     addToWishlist: (state, action) => {
-      const productId = action.payload;
-      if (!state.items.some(item => item.id === productId)) {
-        state.items.push({ id: productId });
+      const { productId, productData } = action.payload;
+      if (!state.items.some(item => item.productId === productId)) {
+        // Create wishlist item with the structure expected by the backend
+        const wishlistItem = {
+          id: Date.now().toString(), // Temporary ID for UI
+          productId: productId,
+          title: productData.title,
+          price: productData.price,
+          imageUrl: productData.imageUrl || productData.image,
+          stockQuantity: productData.stockQuantity,
+          category: productData.category,
+          addedAt: new Date().toISOString()
+        };
+        state.items.push(wishlistItem);
       }
     },
     removeFromWishlist: (state, action) => {
       const productId = action.payload;
-      state.items = state.items.filter(item => item.id !== productId);
+      state.items = state.items.filter(item => item.productId !== productId);
     },
     toggleWishlist: (state, action) => {
-      const productId = action.payload;
-      const index = state.items.findIndex(item => item.id === productId);
+      const { productId, productData } = action.payload;
+      const index = state.items.findIndex(item => item.productId === productId);
       if (index > -1) {
         state.items.splice(index, 1);
       } else {
-        state.items.push({ id: productId });
+        // Add to wishlist
+        const wishlistItem = {
+          id: Date.now().toString(),
+          productId: productId,
+          title: productData.title,
+          price: productData.price,
+          imageUrl: productData.imageUrl || productData.image,
+          stockQuantity: productData.stockQuantity,
+          category: productData.category,
+          addedAt: new Date().toISOString()
+        };
+        state.items.push(wishlistItem);
       }
     },
     clearWishlist: (state) => {
@@ -195,7 +217,8 @@ const wishlistSlice = createSlice({
       })
       .addCase(fetchWishlist.fulfilled, (state, action) => {
         state.loading = false;
-        state.items = action.payload.items;
+        // Store the full items array from backend
+        state.items = action.payload.items || [];
       })
       .addCase(fetchWishlist.rejected, (state, action) => {
         state.loading = false;
@@ -210,6 +233,7 @@ const wishlistSlice = createSlice({
       .addCase(addToWishlistAPI.fulfilled, (state) => {
         state.loading = false;
         // Fetch updated wishlist after adding
+        // The fetchWishlist will be called separately to update the state
       })
       .addCase(addToWishlistAPI.rejected, (state, action) => {
         state.loading = false;
@@ -224,6 +248,7 @@ const wishlistSlice = createSlice({
       .addCase(removeFromWishlistAPI.fulfilled, (state) => {
         state.loading = false;
         // Fetch updated wishlist after removing
+        // The fetchWishlist will be called separately to update the state
       })
       .addCase(removeFromWishlistAPI.rejected, (state, action) => {
         state.loading = false;
@@ -238,6 +263,7 @@ const wishlistSlice = createSlice({
       .addCase(toggleWishlistAPI.fulfilled, (state, action) => {
         state.loading = false;
         // Fetch updated wishlist after toggling
+        // The fetchWishlist will be called separately to update the state
       })
       .addCase(toggleWishlistAPI.rejected, (state, action) => {
         state.loading = false;
